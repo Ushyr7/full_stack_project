@@ -9,6 +9,7 @@ const router = express.Router();
 const query_insertProduct= "insert into Products(name, price) values (?,?);"
 const query_updateProduct= "update Products set name = ?, price = ?, description = ? where id = ?;"
 const query_deleteProduct= "delete from Products where id = ?"
+const query_getProducts= "select name, price, description from Products;"
 
 //ajouter un nouveau produit
 router.post("/product",(req, res) => {
@@ -64,6 +65,21 @@ router.delete("/product/:id",(req, res) => {
     } catch {
         res.status(500).send('Erreur');
     }          
+});
+
+//obtenir tout les produits
+router.get("/product", (req, res) => {
+    mysqlConnection.query(query_getProducts, (err, rows, fields)=>{
+        if(!err){
+            if (rows.length == 0) {
+                res.status(204).send("Aucun produit");
+            } else {
+                res.status(200).send(rows);
+            }
+        } else {
+            res.status(500).send(err);
+        }
+    })
 });
 
 module.exports = router;
