@@ -37,10 +37,12 @@ router.put("/product/:id",(req, res) => {
             if(err){
                 res.status(500).send("Impossible de modifier le produit "+ req.params.id + ", veuillez entrer des données correctes");
             }
-            if(result.affectedRows == 0) {
+            else if(result.affectedRows == 0) {
                 res.status(404).send("Impossible de trouver le produit " + req.params.id)
+            } else {
+                res.status(201).send("Le produit " + req.params.id + " a été modifié");
             }
-            res.status(201).send("Le produit " + req.params.id + " a été modifié");
+            
         }); 
     } catch {
         res.status(500).send('Erreur');
