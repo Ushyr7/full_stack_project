@@ -7,7 +7,8 @@ const router = express.Router();
 
 //préparation des requêtes
 const query_insertProduct= "insert into Products(name, price) values (?,?);"
-const query_updateProduct= "update Products set name = ?, price = ?, description = ? where id = ?; "
+const query_updateProduct= "update Products set name = ?, price = ?, description = ? where id = ?;"
+const query_deleteProduct= "delete from Products where id = ?"
 
 //ajouter un nouveau produit
 router.post("/product",(req, res) => {
@@ -39,6 +40,26 @@ router.put("/product/:id",(req, res) => {
                 res.status(404).send("Impossible de trouver le produit " + req.params.id)
             }
             res.status(201).send("Le produit " + req.params.id + " a été modifié");
+        }); 
+    } catch {
+        res.status(500).send('Erreur');
+    }          
+});
+
+//supprimer un produit avec son id
+router.delete("/product/:id",(req, res) => {
+    try { 
+        mysqlConnection.query(query_deleteProduct, 
+            [req.params.id],
+            (err, result)=>{
+            if(err){
+                res.status(500).send("Impossible de supprimer le produit "+ req.params.id + ", veuillez entrer des données correctes");
+            }
+            else if(result.affectedRows == 0) {
+                res.status(404).send("Impossible de trouver le produit " + req.params.id)
+            } else {
+                res.status(200).send("Le produit " + req.params.id + " a été supprimé");
+            }
         }); 
     } catch {
         res.status(500).send('Erreur');
