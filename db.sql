@@ -48,17 +48,17 @@ CREATE TABLE `Categories` (
   `name` varchar(255) unique
 );
 
-ALTER TABLE `JunctionsShopProduct` ADD FOREIGN KEY (`productId`) REFERENCES `Products` (`id`);
+ALTER TABLE `JunctionsShopProduct` ADD FOREIGN KEY (`productId`) REFERENCES `Products` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `JunctionsShopProduct` ADD FOREIGN KEY (`shopId`) REFERENCES `Shops` (`id`);
+ALTER TABLE `JunctionsShopProduct` ADD FOREIGN KEY (`shopId`) REFERENCES `Shops` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `Schedule` ADD FOREIGN KEY (`shopID`) REFERENCES `Shops` (`id`);
+ALTER TABLE `Schedule` ADD FOREIGN KEY (`shopID`) REFERENCES `Shops` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `Shops` ADD FOREIGN KEY (`creatorId`) REFERENCES `Users` (`id`);
 
-ALTER TABLE `JunctionsProductCategory` ADD FOREIGN KEY (`categoryId`) REFERENCES `Categories` (`id`);
+ALTER TABLE `JunctionsProductCategory` ADD FOREIGN KEY (`categoryId`) REFERENCES `Categories` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `JunctionsProductCategory` ADD FOREIGN KEY (`productId`) REFERENCES `Products` (`id`);
+ALTER TABLE `JunctionsProductCategory` ADD FOREIGN KEY (`productId`) REFERENCES `Products` (`id`) ON DELETE CASCADE;
 
 
 insert into Shops(name, isAvailable, created, creatorId)

@@ -9,7 +9,7 @@ const router = express.Router();
 const query_insertProduct= "insert into Products(name, price) values (?,?);"
 const query_updateProduct= "update Products set name = ?, price = ?, description = ? where id = ?;"
 const query_deleteProduct= "delete from Products where id = ?"
-const query_getProducts= "select name, price, description from Products;"
+const query_getProducts= "select id, name, price, description from Products;"
 
 //ajouter un nouveau produit
 router.post("/product",(req, res) => {
