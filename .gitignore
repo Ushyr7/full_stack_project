@@ -1,3 +1,25 @@
 mysql-data/
 node_modules/
 .env
+
+# dependencies
+full_stack_project_client/node_modules
+full_stack_project_client/.pnp
+full_stack_project_client/.pnp.js
+
+# testing
+full_stack_project_client/coverage
+
+# production
+full_stack_project_client/build
+
+# misc
+full_stack_project_client/.DS_Store
+full_stack_project_client/.env.local
+full_stack_project_client/.env.development.local
+full_stack_project_client/.env.test.local
+full_stack_project_client/.env.production.local
+
+full_stack_project_client/npm-debug.log*
+full_stack_project_client/yarn-debug.log*
+full_stack_project_client/yarn-error.log*
