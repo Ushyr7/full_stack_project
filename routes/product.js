@@ -122,10 +122,10 @@ router.post("/product/:productId/category/:categoryId",(req, res) => {
                     [req.params.categoryId],
                     (err, result)=>{
                     if(err){
-                        res.status(500).send("Impossible de trouver la category "+ req.params.categoryId + ", veuillez entrer des données correctes");
+                        res.status(500).send("Impossible de trouver la catégorie "+ req.params.categoryId + ", veuillez entrer des données correctes");
                     }
                     else if(!result.length) {
-                        res.status(404).send("Impossible de trouver la category " + req.params.categoryId)
+                        res.status(404).send("Impossible de trouver la catégorie " + req.params.categoryId)
                     } else {
                         //si la catégorie existe, on vérifie que le lien n'existe pas déjà
                         mysqlConnection.query(query_getJunctionProductCategory, 
