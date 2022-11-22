@@ -6,11 +6,15 @@ const router = express.Router();
 
 //préparation des requêtes
 const query_getShop = "SELECT shops.id, name, isAvailable, created from shops;";
+const query_getShopById = "SELECT shops.id, name, isAvailable, created from shops where id = ?;"
+const query_getProductById= "select id, name, price, description from Products where id = ?;"
+const query_getJunctionShopProduct = "select * from junctionsshopproduct where shopid = ? and productid = ?"
 const query_insertShop= "insert into Shops(name, isAvailable, created, creatorId) values (?,?, NOW(), ?);"
 const query_getNewShopId= "SELECT LAST_INSERT_ID() as id;"
 const query_insertSchedule= "insert into Schedule(shopId, day, open, close) values (?, ?, ?, ?);"
 const query_deleteShop= "delete from Shops where id = ?;"
 const query_updateShop= "update Shops set name = ?, isAvailable = ? where id = ?;"
+const query_insertJunctionShopProduct = "insert into JunctionsShopProduct(shopid, productid) value (?, ?);"
 
 //obtenir tout les magasins
 router.get("/shop", (req, res) => {
@@ -26,6 +30,27 @@ router.get("/shop", (req, res) => {
         }
 
     })
+});
+
+
+//obtenir un magasin avec son id
+router.get("/shop/:id",(req, res) => {
+    try { 
+        mysqlConnection.query(query_getShopById, 
+            [req.params.id],
+            (err, result)=>{
+            if(err){
+                res.status(500).send("Impossible de trouver le magasin "+ req.params.id + ", veuillez entrer des données correctes");
+            }
+            else if(!result.length) {
+                res.status(404).send("Impossible de trouver le magasin " + req.params.id)
+            } else {
+                res.status(200).send(result);
+            }
+        }); 
+    } catch {
+        res.status(500).send('Erreur');
+    }          
 });
 
 //ajouter un nouveau magasin
@@ -91,6 +116,60 @@ router.delete("/shop/:id",(req, res) => {
         }); 
     } catch {
         res.status(500).send('Erreur');
+    }          
+});
+
+//ajouter un produit à un magasin avec leurs id
+router.post("/shop/:shopId/product/:productId",(req, res) => {
+    try {
+        //on verifie si le magasin existe
+        mysqlConnection.query(query_getShopById, 
+            [req.params.shopId],
+            (err, result)=>{
+            if(err){
+                res.status(500).send("Impossible de trouver le magasin "+ req.params.shopId + ", veuillez entrer des données correctes");
+            }
+            else if(!result.length) {
+                res.status(404).send("Impossible de trouver le magasin " + req.params.shopId)
+            } else {
+                //s'il existe, on vérifie si le produit existe
+                mysqlConnection.query(query_getProductById, 
+                    [req.params.productId],
+                    (err, result)=>{
+                    if(err){
+                        res.status(500).send("Impossible de trouver le produit "+ req.params.productId + ", veuillez entrer des données correctes");
+                    }
+                    else if(!result.length) {
+                        res.status(404).send("Impossible de trouver le produit " + req.params.productId)
+                    } else {
+                        //si le produit existe, on vérifie que le lien n'existe pas déjà
+                        mysqlConnection.query(query_getJunctionShopProduct, 
+                            [req.params.shopId, req.params.productId],
+                            (err, rows)=>{
+                            if(err){
+                                res.status(500).send("Impossible de réaliser cette opération");
+                            }
+                            else if(rows.length > 0) {
+                                res.status(404).send("Le produit " + req.params.productId + " est déjà associé à ce magasin")
+                            } else {
+                                //si le lien n'existe pas, on tente de l'insérer
+                                mysqlConnection.query(query_insertJunctionShopProduct, 
+                                    [req.params.shopId, req.params.productId],
+                                    (err, result)=>{
+                                    if(err){
+                                        res.status(500).send("Impossible de réaliser cette opération");
+                                    } else {
+                                        res.status(201).send("Le produit " + req.params.productId + " a été ajouté au magasin");
+                                    }
+                                });
+                            }
+                        });                    
+                    }
+                });
+            }
+        }); 
+    } catch {
+        res.status(500).send('Impossible de réaliser cette opération');
     }          
 });
 

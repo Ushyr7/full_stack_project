@@ -10,6 +10,11 @@ const query_insertProduct= "insert into Products(name, price) values (?,?);"
 const query_updateProduct= "update Products set name = ?, price = ?, description = ? where id = ?;"
 const query_deleteProduct= "delete from Products where id = ?"
 const query_getProducts= "select id, name, price, description from Products;"
+const query_getProductById = "select id, name, price, description from Products where id = ?;"
+const query_getCategoryById = "select * from categories where id = ?;"
+const query_getJunctionProductCategory = "select * from junctionsproductcategory where productid = ? and categoryid = ?"
+const query_insertJunctionProductCategory = "insert into Junctionsproductcategory(productid, categoryid) value (?, ?);"
+
 
 //ajouter un nouveau produit
 router.post("/product",(req, res) => {
@@ -82,6 +87,75 @@ router.get("/product", (req, res) => {
             res.status(500).send(err);
         }
     })
+});
+
+//obtenir un produit avec son id
+router.get("/product/:id", (req, res) => {
+    mysqlConnection.query(query_getProductById, [req.params.id], (err, rows, fields)=>{
+        if(!err){
+            if (rows.length == 0) {
+                res.status(204).send("Impossible de trouver le produit");
+            } else {
+                res.status(200).send(rows);
+            }
+        } else {
+            res.status(500).send(err);
+        }
+    })
+});
+
+//ajouter une categorie à un produit avec leurs id
+router.post("/product/:productId/category/:categoryId",(req, res) => {
+    try {
+        //on verifie si le produit existe
+        mysqlConnection.query(query_getProductById, 
+            [req.params.productId],
+            (err, result)=>{
+            if(err){
+                res.status(500).send("Impossible de trouver le produit "+ req.params.productId + ", veuillez entrer des données correctes");
+            }
+            else if(!result.length) {
+                res.status(404).send("Impossible de trouver le produit " + req.params.productId)
+            } else {
+                //s'il existe, on vérifie si la category existe
+                mysqlConnection.query(query_getCategoryById, 
+                    [req.params.categoryId],
+                    (err, result)=>{
+                    if(err){
+                        res.status(500).send("Impossible de trouver la category "+ req.params.categoryId + ", veuillez entrer des données correctes");
+                    }
+                    else if(!result.length) {
+                        res.status(404).send("Impossible de trouver la category " + req.params.categoryId)
+                    } else {
+                        //si la catégorie existe, on vérifie que le lien n'existe pas déjà
+                        mysqlConnection.query(query_getJunctionProductCategory, 
+                            [req.params.productId, req.params.categoryId],
+                            (err, rows)=>{
+                            if(err){
+                                res.status(500).send("Impossible de réaliser cette opération");
+                            }
+                            else if(rows.length > 0) {
+                                res.status(404).send("La catégorie " + req.params.categoryId + " est déjà associé à ce produit")
+                            } else {
+                                //si le lien n'existe pas, on tente de l'insérer
+                                mysqlConnection.query(query_insertJunctionProductCategory, 
+                                    [req.params.productId, req.params.categoryId],
+                                    (err, result)=>{
+                                    if(err){
+                                        res.status(500).send("Impossible de réaliser cette opération");
+                                    } else {
+                                        res.status(201).send("Le catégorie " + req.params.categoryId + " a été ajouté au produit");
+                                    }
+                                });
+                            }
+                        });                    
+                    }
+                });
+            }
+        }); 
+    } catch {
+        res.status(500).send('Impossible de réaliser cette opération');
+    }          
 });
 
 module.exports = router;
