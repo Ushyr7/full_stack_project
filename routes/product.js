@@ -13,6 +13,7 @@ const query_getProductById = "select id, name, price, description from Products 
 const query_getCategoryById = "select * from categories where id = ?;"
 const query_getJunctionProductCategory = "select * from junctionsproductcategory where productid = ? and categoryid = ?"
 const query_insertJunctionProductCategory = "insert into Junctionsproductcategory(productid, categoryid) value (?, ?);"
+const query_getNbProducts="select count(id) as nbProducts from products;"
 
 
 //ajouter un nouveau produit
@@ -82,13 +83,21 @@ router.get("/product", (req, res) => {
         search = "%" + search + "%";
         let sort = req.query.sort || "id";
         const query_getProducts= `select id, name, price, description from Products where name like ? order by ${sort} limit ?, 10;`
+        const query_getNbProducts="select count(id) as nbProducts from products where name like ?;"
         mysqlConnection.query(query_getProducts, [search, page * limit], (err, rows, fields)=>{
             if(!err){
                 if (rows.length == 0) {
                     res.status(204).send("Aucun produit");
                 } else {
                     let resPage = page + 1;
-                    res.status(200).send({sort,"page": resPage, rows});
+                    mysqlConnection.query(query_getNbProducts, [search], (err, result)=> {
+                        if(!err) {
+                            res.status(200).send({"lastPage": Math.ceil(result[0].nbProducts / limit), sort,"page": resPage, rows});
+                        } else {
+                            res.status(500).send("Impossible d'effectuer cette opération"); 
+                        }
+                    })
+                    
                 }
             } else {
                 res.status(500).send("Impossible d'effectuer cette opération");
