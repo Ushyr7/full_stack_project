@@ -5,7 +5,6 @@ const mysqlConnection = require("../connection");
 const router = express.Router();
 
 //préparation des requêtes
-const query_getShop = "SELECT shops.id, name, isAvailable, created from shops;";
 const query_getShopById = "SELECT shops.id, name, isAvailable, created from shops where id = ?;"
 const query_getProductById= "select id, name, price, description from Products where id = ?;"
 const query_getJunctionShopProduct = "select * from junctionsshopproduct where shopid = ? and productid = ?"
@@ -16,20 +15,38 @@ const query_deleteShop= "delete from Shops where id = ?;"
 const query_updateShop= "update Shops set name = ?, isAvailable = ? where id = ?;"
 const query_insertJunctionShopProduct = "insert into JunctionsShopProduct(shopid, productid) value (?, ?);"
 
-//obtenir tout les magasins
+//obtenir tout les magasins avec pagination, filtre, recherche et tri
 router.get("/shop", (req, res) => {
-    mysqlConnection.query(query_getShop, (err, rows, fields)=>{
-        if(!err){
-            if (res.length = 0) {
-                res.status(204).send(rows);
+    try {
+        const page = parseInt(req.query.page) - 1 || 0;
+        const limit = 5;
+        let search = req.query.search ||'';
+        search = "%" + search + "%";
+        let sort = req.query.sort || "id";
+        const query_getShop = `SELECT shops.id, name, isAvailable, created from shops where name like ? order by ${sort} limit ?, 5;`
+        const query_getNbShops="select count(id) as nbShops from shops where name like ?;"
+        mysqlConnection.query(query_getShop, [search, page * limit], (err, rows, fields)=>{
+            if(!err){
+                if (rows.length == 0) {
+                    res.status(204).send("Aucun magasin");
+                } else {
+                    let resPage = page + 1;
+                    mysqlConnection.query(query_getNbShops, [search], (err, result)=> {
+                        if(!err) {
+                            res.status(200).send({"lastPage": Math.ceil(result[0].nbShops / limit), sort,"page": resPage, rows});
+                        } else {
+                            res.status(500).send("Impossible d'effectuer cette opération"); 
+                        }
+                    })
+                    
+                }
+            } else {
+                res.status(500).send("Impossible d'effectuer cette opération");
             }
-            res.status(200).send(rows);
-        }
-        else {
-            res.status(500).send(err);
-        }
-
-    })
+        })
+    } catch (err){
+        res.status(500).send('Erreur');
+    }
 });
 
 

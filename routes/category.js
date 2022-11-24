@@ -70,17 +70,36 @@ router.delete("/category/:id",(req, res) => {
 
 //obtenir toute les catégories
 router.get("/category", (req, res) => {
-    mysqlConnection.query(query_getCategories, (err, rows, fields)=>{
-        if(!err){
-            if (rows.length == 0) {
-                res.status(204).send("Aucune catégorie");
+    try {
+        const page = parseInt(req.query.page) - 1 || 0;
+        const limit = 5;
+        let search = req.query.search ||'';
+        search = "%" + search + "%";
+        let sort = req.query.sort || "id";
+        const query_getCategories= `select id, name from Categories where name like ? order by ${sort} limit ?, 5;`
+        const query_getNbCategories="select count(id) as nbCategories from categories where name like ?;"
+        mysqlConnection.query(query_getCategories, [search, page * limit], (err, rows, fields)=>{
+            if(!err){
+                if (rows.length == 0) {
+                    res.status(204).send("Aucune catégorie");
+                } else {
+                    let resPage = page + 1;
+                    mysqlConnection.query(query_getNbCategories, [search], (err, result)=> {
+                        if(!err) {
+                            res.status(200).send({"lastPage": Math.ceil(result[0].nbCategories / limit), sort,"page": resPage, rows});
+                        } else {
+                            res.status(500).send("Impossible d'effectuer cette opération"); 
+                        }
+                    })
+                    
+                }
             } else {
-                res.status(200).send(rows);
+                res.status(500).send("Impossible d'effectuer cette opération");
             }
-        } else {
-            res.status(500).send(err);
-        }
-    })
+        })
+    } catch (err){
+        res.status(500).send('Erreur');
+    }
 });
 
 
