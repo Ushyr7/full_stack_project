@@ -9,7 +9,6 @@ const router = express.Router();
 const query_insertProduct= "insert into Products(name, price) values (?,?);"
 const query_updateProduct= "update Products set name = ?, price = ?, description = ? where id = ?;"
 const query_deleteProduct= "delete from Products where id = ?"
-const query_getProducts= "select id, name, price, description from Products;"
 const query_getProductById = "select id, name, price, description from Products where id = ?;"
 const query_getCategoryById = "select * from categories where id = ?;"
 const query_getJunctionProductCategory = "select * from junctionsproductcategory where productid = ? and categoryid = ?"
@@ -74,19 +73,30 @@ router.delete("/product/:id",(req, res) => {
     }          
 });
 
-//obtenir tout les produits
+//obtenir tout les produits avec pagination, recherche, filtre et tri
 router.get("/product", (req, res) => {
-    mysqlConnection.query(query_getProducts, (err, rows, fields)=>{
-        if(!err){
-            if (rows.length == 0) {
-                res.status(204).send("Aucun produit");
+    try {
+        const page = parseInt(req.query.page) - 1 || 0;
+        const limit = 10;
+        let search = req.query.search ||'';
+        search = "%" + search + "%";
+        let sort = req.query.sort || "id";
+        const query_getProducts= `select id, name, price, description from Products where name like ? order by ${sort} limit ?, 10;`
+        mysqlConnection.query(query_getProducts, [search, page * limit], (err, rows, fields)=>{
+            if(!err){
+                if (rows.length == 0) {
+                    res.status(204).send("Aucun produit");
+                } else {
+                    let resPage = page + 1;
+                    res.status(200).send({sort,"page": resPage, rows});
+                }
             } else {
-                res.status(200).send(rows);
+                res.status(500).send("Impossible d'effectuer cette opération");
             }
-        } else {
-            res.status(500).send(err);
-        }
-    })
+        })
+    } catch (err){
+        res.status(500).send('Erreur');
+    }
 });
 
 //obtenir un produit avec son id
