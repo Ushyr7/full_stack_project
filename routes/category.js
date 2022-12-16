@@ -76,7 +76,8 @@ router.get("/category", (req, res) => {
         let search = req.query.search ||'';
         search = "%" + search + "%";
         let sort = req.query.sort || "id";
-        const query_getCategories= `select id, name from Categories where name like ? order by ${sort} limit ?, 5;`
+        let sortType= req.query.sortType || "asc";
+        const query_getCategories= `select id, name from Categories where name like ? order by ${sort} ${sortType} limit ?, 5;`
         const query_getNbCategories="select count(id) as nbCategories from categories where name like ?;"
         mysqlConnection.query(query_getCategories, [search, page * limit], (err, rows, fields)=>{
             if(!err){

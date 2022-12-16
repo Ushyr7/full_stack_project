@@ -23,7 +23,8 @@ router.get("/shop", (req, res) => {
         let search = req.query.search ||'';
         search = "%" + search + "%";
         let sort = req.query.sort || "id";
-        const query_getShop = `SELECT shops.id, name, isAvailable, created from shops where name like ? order by ${sort} limit ?, 5;`
+        let sortType=req.query.sortType || "asc";
+        const query_getShop = `SELECT shops.id, name, isAvailable, created from shops where name like ? order by ${sort} ${sortType} limit ?, 5;`
         const query_getNbShops="select count(id) as nbShops from shops where name like ?;"
         mysqlConnection.query(query_getShop, [search, page * limit], (err, rows, fields)=>{
             if(!err){

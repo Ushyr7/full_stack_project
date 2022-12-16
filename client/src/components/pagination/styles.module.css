@@ -28,8 +28,16 @@
     cursor: pointer;
     background-color: white;
 }
-
 .active{
     background-color: var(--blue);
     color: white;
 }
+
+.page_btn:hover{
+    background-color: lightgray;
+}
+
+.active:hover{
+    background-color:#0a4992;;
+}
+

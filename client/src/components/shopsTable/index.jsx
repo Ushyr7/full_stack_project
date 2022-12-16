@@ -2,7 +2,7 @@ import styles from "./styles.module.css"
 import moment from 'moment'
 
 
-const Table =({ shops }) => {
+const ShopsTable =({ shops }) => {
     return (
         <div className={styles.container}>
             <div className={styles.heading}>
@@ -32,4 +32,4 @@ const Table =({ shops }) => {
     )
 };
 
-export default Table;
+export default ShopsTable;

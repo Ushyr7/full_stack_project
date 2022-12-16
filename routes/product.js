@@ -78,11 +78,12 @@ router.delete("/product/:id",(req, res) => {
 router.get("/product", (req, res) => {
     try {
         const page = parseInt(req.query.page) - 1 || 0;
-        const limit = 10;
+        const limit = 5;
         let search = req.query.search ||'';
         search = "%" + search + "%";
         let sort = req.query.sort || "id";
-        const query_getProducts= `select id, name, price, description from Products where name like ? order by ${sort} limit ?, 10;`
+        let sortType=req.query.sortType || "asc";
+        const query_getProducts= `select id, name, price, description from Products where name like ? order by ${sort} ${sortType} limit ?, 5;`
         const query_getNbProducts="select count(id) as nbProducts from products where name like ?;"
         mysqlConnection.query(query_getProducts, [search, page * limit], (err, rows, fields)=>{
             if(!err){

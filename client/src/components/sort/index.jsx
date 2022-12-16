@@ -1,8 +1,16 @@
 import styles from "./styles.module.css";
 
-const Sort = ({ sort, setSort }) => {
+const Sort = ({ sort, setSort, sortType, setSortType, values}) => {
 	const onSelectChange = ({ currentTarget: input }) => {
-		setSort({ sort: input.value, order: sort.order });
+		setSort({sort: input.value});
+	};
+
+	const onArrowChange = () => {
+		if (sortType === "asc") {
+			setSortType("desc");
+		} else {
+			setSortType("asc");
+		}
 	};
 
 
@@ -13,11 +21,15 @@ const Sort = ({ sort, setSort }) => {
 				onChange={onSelectChange}
 				className={styles.select}
 				defaultValue={sort.sort}>
-				<option value="id">Ajout</option>
-				<option value="name">Nom</option>
-				<option value="isAvailable">Disponibilité</option>
-				<option value="created">Date de création</option>
+				{values.map((val)=> (
+					<option value={val.key}>{val.value}</option>
+					)
+            	)}
 			</select>
+			<button className={styles.arrow_btn} onClick={onArrowChange}>
+				<p className={styles.up_arrow}>&uarr;</p>
+				<p className={styles.down_arrow}>&darr;</p>
+			</button>
 		</div>
 	);
 };
