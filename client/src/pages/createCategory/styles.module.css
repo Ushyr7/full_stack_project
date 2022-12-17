@@ -1,0 +1,6 @@
+.form{
+    display: block;
+    flex:content;
+    position: center;
+    padding-left: 50px;
+}

@@ -5,6 +5,7 @@ import Table from "../../components/shopsTable"
 import Pagination from "../../components/pagination"
 import Sort from "../../components/sort"
 import Head from "../../components/head"
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -17,6 +18,11 @@ function Shops() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
+  let navigate = useNavigate();
+  const routeChangeAdd = () => {
+    navigate('shops/add');
+  }
+  
   useEffect(() => {
     const getAllShops = async() => {
       try {
@@ -48,6 +54,7 @@ function Shops() {
             <Sort sort={sort} setSort={(sort) => setSort(sort)} sortType={sortType} setSortType={(sortType) => setSortType(sortType)} values={[{key:"created", value:"Création"},{key:"name", value:"Nom"},{key:"isAvailable", value:"Disponibilité"}]}/>
           </div>
         </div>
+        <button className="button"  onClick={routeChangeAdd}>Ajouter</button>
       </div>
     </div>
   );

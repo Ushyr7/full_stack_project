@@ -5,6 +5,7 @@ import Head from "../../components/head"
 import Table from "../../components/productsTable"
 import Pagination from "../../components/pagination"
 import Sort from "../../components/sort"
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -16,6 +17,11 @@ function Products() {
   const [sortType, setSortType] = useState("asc");
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+
+  let navigate = useNavigate();
+  const routeChangeAdd = () =>{ 
+    navigate('add');
+  }
 
   useEffect(() => {
     const getAllProducts = async() => {
@@ -45,9 +51,12 @@ function Products() {
             setPage={(page) => setPage(page)}/>
           </div>
           <div className ="filter_container">
-            <Sort sort={sort} setSort={(sort) => setSort(sort)} sortType={sortType} setSortType={(sortType) => setSortType(sortType)} values={[{key:"id", value:"Création"},{key:"name", value:"Nom"},{key:"price", value:"Prix"}]}/>
+            <Sort sort={sort} setSort={(sort) => setSort(sort)} 
+              sortType={sortType} setSortType={(sortType) => setSortType(sortType)} 
+              values={[{key:"id", value:"Création"},{key:"name", value:"Nom"},{key:"price", value:"Prix"}]}/>
           </div>
         </div>
+        <button className="button"  onClick={routeChangeAdd}>Ajouter</button>
       </div>
     </div>
   );
