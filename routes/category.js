@@ -9,7 +9,7 @@ const router = express.Router();
 const query_insertCategory= "insert into Categories(name) values (?);"
 const query_updateCategory= "update Categories set name = ? where id = ?;"
 const query_deleteCategory= "delete from Categories where id = ?"
-const query_getCategories= "select id, name from Categories;"
+const query_getCategories= "select name from Categories;"
 
 //ajouter une catégorie
 router.post("/category",(req, res) => {
@@ -68,7 +68,7 @@ router.delete("/category/:id",(req, res) => {
     }          
 });
 
-//obtenir toute les catégories
+//obtenir toute les catégories avec pagination, recherche et tri
 router.get("/category", (req, res) => {
     try {
         const page = parseInt(req.query.page) - 1 || 0;
@@ -102,6 +102,22 @@ router.get("/category", (req, res) => {
         res.status(500).send('Erreur');
     }
 });
+
+//obtenir toute les catégories
+router.get("/category/all", (req, res) => {
+    try {
+        mysqlConnection.query(query_getCategories, (err, rows) => {
+            if(!err) {
+                res.status(200).send(rows);
+            } else {
+                res.status(500).send("Impossible d'effectuer cette opération"); 
+            }
+        })
+    } catch (err){
+        res.status(500).send('Erreur');
+    }
+});
+
 
 
 module.exports = router;

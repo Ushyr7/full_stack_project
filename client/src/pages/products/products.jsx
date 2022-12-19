@@ -5,11 +5,12 @@ import Head from "../../components/head"
 import Table from "../../components/productsTable"
 import Pagination from "../../components/pagination"
 import Sort from "../../components/sort"
+import Filter from "../../components/filterProductCategory"
 import { useNavigate } from "react-router-dom";
 
 
 
-const base_url = process.env.REACT_APP_API_URL + "/product";
+const base_url = process.env.REACT_APP_API_URL;
 
 function Products() {
   const [obj, setObj] = useState({});
@@ -17,6 +18,8 @@ function Products() {
   const [sortType, setSortType] = useState("asc");
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('');
 
   let navigate = useNavigate();
   const routeChangeAdd = () =>{ 
@@ -24,19 +27,31 @@ function Products() {
   }
 
   useEffect(() => {
-    const getAllProducts = async() => {
+    const getAllCategories = async() => {
       try {
-        const url = `${base_url}?page=${page}&sort=${sort.sort}&search=${search}&sortType=${sortType}`;
+        const url = base_url + "/category/all";
         const { data } = await axios.get(url);
-        setObj(data);
+        setFilters(data);
       }catch(err) {
         console.log(err);
       }
-      document.title = 'Produits - Shop Manager';
     };
 
+    const getAllProducts = async() => {
+      try {
+        var url = base_url + "/product";
+        url = `${url}?page=${page}&sort=${sort.sort}&search=${search}&sortType=${sortType}&filter=${activeFilter}`;
+        const { data } = await axios.get(url);
+        setObj(data)
+      }catch(err) {
+        console.log(err);
+      }
+    };
+    document.title = 'Produits - Shop Manager';
+    //récupération des catégories pour les filtres
+    getAllCategories();
     getAllProducts();
-  }, [sort,sortType, page, search]);
+  }, [sort,sortType, page, search, activeFilter]);
 
   return (
     <div className="wrapper">
@@ -44,7 +59,7 @@ function Products() {
         <Head setSearch={setSearch}/>
         <div className="body">
           <div className ="table_container">
-            <Table products={obj.rows ? obj.rows: []}/>
+            <Table products={obj.rows ? obj.rows: []} filter={activeFilter} />
             <Pagination 
             page={page}
             total={obj.lastPage ? obj.lastPage: 0}
@@ -54,6 +69,7 @@ function Products() {
             <Sort sort={sort} setSort={(sort) => setSort(sort)} 
               sortType={sortType} setSortType={(sortType) => setSortType(sortType)} 
               values={[{key:"id", value:"Création"},{key:"name", value:"Nom"},{key:"price", value:"Prix"}]}/>
+            <Filter filter={activeFilter} setFilter = {(activeFilter) => setActiveFilter(activeFilter)} categories ={filters}/>
           </div>
         </div>
         <button className="button"  onClick={routeChangeAdd}>Ajouter</button>

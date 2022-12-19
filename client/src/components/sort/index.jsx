@@ -16,7 +16,7 @@ const Sort = ({ sort, setSort, sortType, setSortType, values}) => {
 
 	return (
 		<div className={styles.container}>
-			<p className={styles.sort_by}>Sort By :</p>
+			<p className={styles.sort_by}>Trier par :</p>
 			<select
 				onChange={onSelectChange}
 				className={styles.select}

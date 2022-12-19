@@ -13,8 +13,20 @@ const query_getProductById = "select id, name, price, description from Products 
 const query_getCategoryById = "select * from categories where id = ?;"
 const query_getJunctionProductCategory = "select * from junctionsproductcategory where productid = ? and categoryid = ?"
 const query_insertJunctionProductCategory = "insert into Junctionsproductcategory(productid, categoryid) value (?, ?);"
-const query_getNbProducts="select count(id) as nbProducts from products;"
+const query_getAvailableProducts = "select name from products where shopId is null;"
 
+//obtenir les produits qui ne sont pas lié à un magasin
+router.get("/product/available", (req, res) => {
+    mysqlConnection.query(query_getAvailableProducts, (err, rows)=>{
+        if(rows.length == 0){
+            res.status(204).send("Aucun produit n'est disponible pour le moment");
+        } else if(rows.length != 0){
+            res.status(200).send(rows);
+        } else {
+            res.status(500).send("Une erreur est survenue");
+        }
+    })
+});
 
 //ajouter un nouveau produit
 router.post("/product",(req, res) => {
@@ -83,25 +95,45 @@ router.get("/product", (req, res) => {
         search = "%" + search + "%";
         let sort = req.query.sort || "id";
         let sortType=req.query.sortType || "asc";
-        const query_getProducts= `select id, name, price, description from Products where name like ? order by ${sort} ${sortType} limit ?, 5;`
-        const query_getNbProducts="select count(id) as nbProducts from products where name like ?;"
-        mysqlConnection.query(query_getProducts, [search, page * limit], (err, rows, fields)=>{
+        let filter = req.query.filter || '';
+        filter = "%" + filter + "%";
+        let query_getProducts = "";
+        let query_getNbProducts = "";
+        if (filter == "%%") {
+            query_getProducts= `SELECT name, price, description, (select GROUP_CONCAT( name ) as categories from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)
+        as categories from products where name like ? 
+        and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)) is null 
+        or ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)) like ?
+        order by ${sort} ${sortType} limit ?, 5;`;
+            query_getNbProducts = `select count(id) as nbProducts from products where name like ?
+            and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories 
+            where categoryId = categories.id and productId = products.id)) like ?
+            or ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories 
+            where categoryId = categories.id and productId = products.id)) is null;`
+        } else {
+            query_getProducts= `SELECT name, price, description, (select GROUP_CONCAT( name ) as categories  from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)
+        as categories from products where name like ? and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)) like ? order by ${sort} ${sortType} limit ?, 5;`
+            query_getNbProducts = `select count(id) as nbProducts from products where name like ?
+        and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories 
+        where categoryId = categories.id and productId = products.id)) like ?;`
+        }
+        mysqlConnection.query(query_getProducts, [search,filter, page * limit], (err, rows, fields)=>{
             if(!err){
                 if (rows.length == 0) {
                     res.status(204).send("Aucun produit");
                 } else {
                     let resPage = page + 1;
-                    mysqlConnection.query(query_getNbProducts, [search], (err, result)=> {
+                    mysqlConnection.query(query_getNbProducts, [search, filter], (err, result)=> {
                         if(!err) {
                             res.status(200).send({"lastPage": Math.ceil(result[0].nbProducts / limit), sort,"page": resPage, rows});
                         } else {
-                            res.status(500).send("Impossible d'effectuer cette opération"); 
+                            res.status(500).send(err); 
                         }
                     })
                     
                 }
             } else {
-                res.status(500).send("Impossible d'effectuer cette opération");
+                res.status(500).send(err);
             }
         })
     } catch (err){

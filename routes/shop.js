@@ -15,7 +15,6 @@ const query_updateShop= "update Shops set name = ?, isAvailable = ? where id = ?
 const query_getShopInProduct ="select shopId from products where id = ?;"
 const query_insertProductInShop="update Products set shopId = ? where id = ?;"
 const query_getProductsInShop = "select * from products where shopId = ?;"
-const query_getNbProductsInShop = "select count(*) from products where shopId = ?;"
 
 //obtenir tout les magasins avec pagination, filtre, recherche et tri
 router.get("/shop", (req, res) => {
