@@ -14,6 +14,8 @@ const query_insertSchedule= "insert into Schedule(shopId, day, open, close) valu
 const query_deleteShop= "delete from Shops where id = ?;"
 const query_updateShop= "update Shops set name = ?, isAvailable = ? where id = ?;"
 const query_insertJunctionShopProduct = "insert into JunctionsShopProduct(shopid, productid) value (?, ?);"
+const query_getShopInProduct ="select shopId from products where id = ?;"
+const query_insertProductInShop="update Products set shopId = ? where id = ?;;"
 
 //obtenir tout les magasins avec pagination, filtre, recherche et tri
 router.get("/shop", (req, res) => {
@@ -160,24 +162,24 @@ router.post("/shop/:shopId/product/:productId",(req, res) => {
                     else if(!result.length) {
                         res.status(404).send("Impossible de trouver le produit " + req.params.productId)
                     } else {
-                        //si le produit existe, on vérifie que le lien n'existe pas déjà
-                        mysqlConnection.query(query_getJunctionShopProduct, 
-                            [req.params.shopId, req.params.productId],
+                        //si le produit existe, on vérifie qu'il n'est pas déjà lié à un magasin
+                        mysqlConnection.query(query_getShopInProduct, 
+                            [req.params.productId],
                             (err, rows)=>{
                             if(err){
                                 res.status(500).send("Impossible de réaliser cette opération");
-                            }
-                            else if(rows.length > 0) {
-                                res.status(404).send("Le produit " + req.params.productId + " est déjà associé à ce magasin")
+                            }else if(rows[0].shopId != null) {
+                                res.status(500).send("Ce produit est déjà lié à un magasin");
                             } else {
+                                if(rows[0].shopId == null)
                                 //si le lien n'existe pas, on tente de l'insérer
-                                mysqlConnection.query(query_insertJunctionShopProduct, 
+                                mysqlConnection.query(query_insertProductInShop, 
                                     [req.params.shopId, req.params.productId],
                                     (err, result)=>{
                                     if(err){
                                         res.status(500).send("Impossible de réaliser cette opération");
                                     } else {
-                                        res.status(201).send("Le produit " + req.params.productId + " a été ajouté au magasin");
+                                        res.status(201).send("Le produit a été ajouté au magasin");
                                     }
                                 });
                             }

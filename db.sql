@@ -17,12 +17,6 @@ CREATE TABLE `Schedule`(
   `close` time    
 );
 
-CREATE TABLE `JunctionsShopProduct` (
-  `id` int PRIMARY KEY auto_increment,
-  `shopId` int,
-  `productId` int
-);
-
 CREATE TABLE `JunctionsProductCategory` (
   `id` int PRIMARY KEY auto_increment,
   `productId` int,
@@ -40,7 +34,8 @@ CREATE TABLE `Products` (
   `id` int PRIMARY KEY auto_increment,
   `name` varchar(255) unique,
   `price` float,
-  `description` varchar(255)
+  `description` varchar(255),
+  `shopId` int
 );
 
 CREATE TABLE `Categories` (
@@ -48,9 +43,7 @@ CREATE TABLE `Categories` (
   `name` varchar(255) unique
 );
 
-ALTER TABLE `JunctionsShopProduct` ADD FOREIGN KEY (`productId`) REFERENCES `Products` (`id`) ON DELETE CASCADE;
-
-ALTER TABLE `JunctionsShopProduct` ADD FOREIGN KEY (`shopId`) REFERENCES `Shops` (`id`) ON DELETE CASCADE;
+ALTER TABLE `Products` ADD FOREIGN KEY (`shopId`) REFERENCES `Shops` (`id`) ON DELETE CASCADE;
 
 ALTER TABLE `Schedule` ADD FOREIGN KEY (`shopID`) REFERENCES `Shops` (`id`) ON DELETE CASCADE;
 
