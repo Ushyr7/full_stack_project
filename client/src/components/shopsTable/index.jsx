@@ -8,7 +8,8 @@ const ShopsTable =({ shops }) => {
             <div className={styles.heading}>
                 <p className={styles.title_tab}>Nom</p>
                 <p className={styles.creationDate_tab}>Date de création</p>
-                <p className={styles.isAvailable_tab}></p>
+                <p className={styles.isAvailable_tab}>État</p>
+                <p className={styles.creationDate_tab}>Nombre de produits</p>
             </div>
             {shops.map((shop)=> (
                 <div className={styles.shop} key={shop.id}>
@@ -25,6 +26,9 @@ const ShopsTable =({ shops }) => {
                     ) : (
                         <p className={styles.isAvailable_false}>EN CONGÉ</p>
                     )}
+                    </div>
+                    <div className={styles.creationDate_container}>
+                        <p className={styles.creationDate}>{shop.nbProducts}</p>
                     </div>
                 </div>
             ))}

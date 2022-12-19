@@ -7,15 +7,15 @@ const router = express.Router();
 //préparation des requêtes
 const query_getShopById = "SELECT shops.id, name, isAvailable, created from shops where id = ?;"
 const query_getProductById= "select id, name, price, description from Products where id = ?;"
-const query_getJunctionShopProduct = "select * from junctionsshopproduct where shopid = ? and productid = ?"
 const query_insertShop= "insert into Shops(name, isAvailable, created, creatorId) values (?,?, NOW(), ?);"
 const query_getNewShopId= "SELECT LAST_INSERT_ID() as id;"
 const query_insertSchedule= "insert into Schedule(shopId, day, open, close) values (?, ?, ?, ?);"
 const query_deleteShop= "delete from Shops where id = ?;"
 const query_updateShop= "update Shops set name = ?, isAvailable = ? where id = ?;"
-const query_insertJunctionShopProduct = "insert into JunctionsShopProduct(shopid, productid) value (?, ?);"
 const query_getShopInProduct ="select shopId from products where id = ?;"
-const query_insertProductInShop="update Products set shopId = ? where id = ?;;"
+const query_insertProductInShop="update Products set shopId = ? where id = ?;"
+const query_getProductsInShop = "select * from products where shopId = ?;"
+const query_getNbProductsInShop = "select count(*) from products where shopId = ?;"
 
 //obtenir tout les magasins avec pagination, filtre, recherche et tri
 router.get("/shop", (req, res) => {
@@ -26,7 +26,7 @@ router.get("/shop", (req, res) => {
         search = "%" + search + "%";
         let sort = req.query.sort || "id";
         let sortType=req.query.sortType || "asc";
-        const query_getShop = `SELECT shops.id, name, isAvailable, created from shops where name like ? order by ${sort} ${sortType} limit ?, 5;`
+        const query_getShop = `SELECT shops.id, name, isAvailable, created, (select count(*) from Products where shopId= shops.id) as nbProducts from shops where name like ? order by ${sort} ${sortType} limit ?, 5;`
         const query_getNbShops="select count(id) as nbShops from shops where name like ?;"
         mysqlConnection.query(query_getShop, [search, page * limit], (err, rows, fields)=>{
             if(!err){
@@ -36,8 +36,8 @@ router.get("/shop", (req, res) => {
                     let resPage = page + 1;
                     mysqlConnection.query(query_getNbShops, [search], (err, result)=> {
                         if(!err) {
-                            res.status(200).send({"lastPage": Math.ceil(result[0].nbShops / limit), sort,"page": resPage, rows});
-                        } else {
+                                res.status(200).send({"lastPage": Math.ceil(result[0].nbShops / limit), sort,"page": resPage, rows});
+                        } else {                                
                             res.status(500).send("Impossible d'effectuer cette opération"); 
                         }
                     })
@@ -65,7 +65,17 @@ router.get("/shop/:id",(req, res) => {
             else if(!result.length) {
                 res.status(404).send("Impossible de trouver le magasin " + req.params.id)
             } else {
-                res.status(200).send(result);
+                mysqlConnection.query(query_getProductsInShop, 
+                    [req.params.id],
+                    (err, rows)=>{
+                        if(err){
+                            res.status(500).send("Impossible de trouver les articles pour le magasin");
+                        }
+                        else {
+                            res.status(200).send({"shop" : result, "products" : rows});
+                        }
+                        
+                    });
             }
         }); 
     } catch {

@@ -51,7 +51,8 @@ function Shops() {
             setPage={(page) => setPage(page)}/>
           </div>
           <div className ="filter_container">
-            <Sort sort={sort} setSort={(sort) => setSort(sort)} sortType={sortType} setSortType={(sortType) => setSortType(sortType)} values={[{key:"created", value:"Création"},{key:"name", value:"Nom"},{key:"isAvailable", value:"Disponibilité"}]}/>
+            <Sort sort={sort} setSort={(sort) => setSort(sort)} sortType={sortType} setSortType={(sortType) => setSortType(sortType)} values={[{key:"created", value:"Création"},
+            {key:"name", value:"Nom"},{key:"isAvailable", value:"Disponibilité"}, {key:"nbProducts", value:"Nombre de produits"}]}/>
           </div>
         </div>
         <button className="button"  onClick={routeChangeAdd}>Ajouter</button>
