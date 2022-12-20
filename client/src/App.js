@@ -10,6 +10,7 @@ import Error from "./pages/error";
 import CreateShops from "./pages/createShops"
 import CreateProducts from "./pages/createProducts"
 import UpdateProduct from "./pages/updateProduct"
+import UpdateShops from "./pages/updateShop";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/products/add" element={<CreateProducts/>}/>
         <Route path="/products/:id/update" element={<UpdateProduct/>}/>
         <Route path="/shops/add" element={<CreateShops/>}/>
+        <Route path="/shops/:id/update" element={<UpdateShops/>}/>
         <Route path="/*" element={<NoPage />}/>
       </Routes>
     </BrowserRouter>

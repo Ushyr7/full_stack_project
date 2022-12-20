@@ -128,9 +128,7 @@ function CreateShops() {
       setResult("Vous devez renseigner des horaires pour au moins une journée")
       return;
     }
-    /*console.log({name: enteredName, 
-      isAvailable: isAvailable === "available" ? true : false,
-    schedule: arrayDay})*/
+    //envoi de la requête
     axios.post(base_url, {
         name: enteredName,
         isAvailable: isAvailable === "available" ? true : false,
