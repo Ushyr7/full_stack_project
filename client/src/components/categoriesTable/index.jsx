@@ -11,8 +11,8 @@ const CategoriesTable =({ categories }) => {
     const [setCategory] = useState([categories]);
 
     let navigate = useNavigate(); 
-    const routeChangeUpdate = () =>{ 
-        let path = `/categories/update`; 
+    const routeChangeUpdate = (id) =>{ 
+        let path = "/categories/" + id + "/update"; 
         navigate(path);
     }
 
@@ -44,7 +44,7 @@ const CategoriesTable =({ categories }) => {
                         <p className= {styles.category_name}> {category.name} </p>
                     </div>
                     <div className= {styles.button_container}>
-                            <button className={styles.button} onClick={routeChangeUpdate}>
+                            <button className={styles.button} onClick={() => routeChangeUpdate(category.id)}>
                                 Modifier
                             </button>
                             <button className={styles.button} onClick={() => handleDeleteCategory(category.id)}>

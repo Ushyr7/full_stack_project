@@ -30,7 +30,7 @@ function Products() {
     const getAllCategories = async() => {
       try {
         const url = base_url + "/category/all";
-        const { data } = await axios.get(url);
+        const {data}  = await axios.get(url);
         setFilters(data);
       }catch(err) {
         console.log(err);

@@ -12,6 +12,22 @@ const query_deleteCategory= "delete from Categories where id = ?"
 const query_getCategories= "select name from Categories;"
 const query_getCategoryWithId = "select name from Categories where id = ?;"
 
+
+//obtenir toute les catégories
+router.get("/category/all", (req, res) => {
+    try {
+        mysqlConnection.query(query_getCategories, (err, rows) => {
+            if(!err) {
+                res.status(200).send(rows);
+            } else {
+                res.status(500).send("Impossible d'effectuer cette opération"); 
+            }
+        })
+    } catch (err){
+        res.status(500).send('Erreur');
+    }
+});
+
 //ajouter une catégorie
 router.post("/category",(req, res) => {
     try { 
@@ -113,21 +129,6 @@ router.get("/category", (req, res) => {
                 }
             } else {
                 res.status(500).send("Impossible d'effectuer cette opération");
-            }
-        })
-    } catch (err){
-        res.status(500).send('Erreur');
-    }
-});
-
-//obtenir toute les catégories
-router.get("/category/all", (req, res) => {
-    try {
-        mysqlConnection.query(query_getCategories, (err, rows) => {
-            if(!err) {
-                res.status(200).send(rows);
-            } else {
-                res.status(500).send("Impossible d'effectuer cette opération"); 
             }
         })
     } catch (err){
