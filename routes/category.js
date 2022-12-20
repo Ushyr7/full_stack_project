@@ -10,6 +10,7 @@ const query_insertCategory= "insert into Categories(name) values (?);"
 const query_updateCategory= "update Categories set name = ? where id = ?;"
 const query_deleteCategory= "delete from Categories where id = ?"
 const query_getCategories= "select name from Categories;"
+const query_getCategoryWithId = "select name from Categories where id = ?;"
 
 //ajouter une catégorie
 router.post("/category",(req, res) => {
@@ -66,6 +67,22 @@ router.delete("/category/:id",(req, res) => {
     } catch {
         res.status(500).send('Erreur');
     }          
+});
+
+
+//obtenir une catégorie avec son id
+router.get("/category/:id", (req, res) => {
+    mysqlConnection.query(query_getCategoryWithId, [req.params.id], (err, rows, fields)=>{
+        if(!err){
+            if (rows.length == 0) {
+                res.status(204).send("Impossible de trouver la catégorie");
+            } else {
+                res.status(200).send(rows);
+            }
+        } else {
+            res.status(500).send(err);
+        }
+    })
 });
 
 //obtenir toute les catégories avec pagination, recherche et tri
