@@ -7,7 +7,7 @@ const router = express.Router();
 //préparation des requêtes
 const query_getShopById = "SELECT shops.id, name, isAvailable, created from shops where id = ?;"
 const query_getProductById= "select id, name, price, description from Products where id = ?;"
-const query_insertShop= "insert into Shops(name, isAvailable, created, creatorId) values (?,?, NOW(), ?);"
+const query_insertShop= "insert into Shops(name, isAvailable, created) values (?,?, NOW());"
 const query_getNewShopId= "SELECT LAST_INSERT_ID() as id;"
 const query_insertSchedule= "insert into Schedule(shopId, day, open, close) values (?, ?, ?, ?);"
 const query_deleteShop= "delete from Shops where id = ?;"
@@ -86,7 +86,7 @@ router.get("/shop/:id",(req, res) => {
 router.post("/shop",(req, res) => {
     try {
         mysqlConnection.query(query_insertShop + query_getNewShopId,
-            [req.body.name, req.body.isAvailable, req.body.creatorId],
+            [req.body.name, req.body.isAvailable],
             (err, rows)=>{
             if(!err){
                 newId = rows[1][0].id;

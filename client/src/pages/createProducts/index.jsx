@@ -10,6 +10,8 @@ function CreateProducts() {
 
     const base_url = process.env.REACT_APP_API_URL + "/product";
     const [enteredName, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [price, setPrice] = useState();
     const [result, setResult] = useState('');
 
 
@@ -17,12 +19,21 @@ function CreateProducts() {
     setName(event.target.value);
   };
 
+  const descriptionChangeHandler = (event) => {
+    setDescription(event.target.value);
+  };
+
+  const priceChangeHandler = (event) => {
+    setPrice(event.target.value);
+  };
 
   const submitActionHandler = (event) => {
     event.preventDefault();
     axios
       .post(base_url, {
         name: enteredName,
+        description: description,
+        price: price
       })
       .then((response) => {
         setResult(response.data)
@@ -34,6 +45,8 @@ function CreateProducts() {
 
   const cancelHandler = () =>{
     setName('');
+    setDescription('');
+    setPrice('');
   }
   return (
     <div className="wrapper">
@@ -45,6 +58,14 @@ function CreateProducts() {
               <div>
                 <label>Nom du produit :</label>
                 <input type="text" value={enteredName} onChange={nameChangeHandler} placeholder="nom" required></input>
+              </div>
+              <div>
+                <label>Description :</label>
+                <input type="text" value={description} onChange={descriptionChangeHandler} placeholder="une description" required></input>
+              </div>
+              <div>
+                <label>Prix :</label>
+                <input type="text" value={price} onChange={priceChangeHandler} placeholder="prix" required></input>
               </div>
               <span><strong>{result}</strong></span>
               <div>

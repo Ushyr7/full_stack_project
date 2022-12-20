@@ -13,6 +13,7 @@ const query_getCategories= "select name from Categories;"
 const query_getCategoryWithId = "select name from Categories where id = ?;"
 
 
+
 //obtenir toute les catégories
 router.get("/category/all", (req, res) => {
     try {
@@ -135,6 +136,7 @@ router.get("/category", (req, res) => {
         res.status(500).send('Erreur');
     }
 });
+
 
 
 

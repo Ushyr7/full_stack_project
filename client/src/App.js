@@ -9,6 +9,7 @@ import UpdateCategory from "./pages/updateCategory";
 import Error from "./pages/error";
 import CreateShops from "./pages/createShops"
 import CreateProducts from "./pages/createProducts"
+import UpdateProduct from "./pages/updateProduct"
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="/categories/add" element={<CreateCategories/>}/>
         <Route path="/categories/:id/update" element={<UpdateCategory/>}/>
         <Route path="/products/add" element={<CreateProducts/>}/>
+        <Route path="/products/:id/update" element={<UpdateProduct/>}/>
         <Route path="/shops/add" element={<CreateShops/>}/>
         <Route path="/*" element={<NoPage />}/>
       </Routes>

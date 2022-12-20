@@ -5,3 +5,10 @@
     margin: 0 auto;
     padding: 25px;
 }
+table{
+    flex:content;
+    position: center;
+    text-align: center;
+    margin: 0 auto;
+    padding: 25px;
+}
