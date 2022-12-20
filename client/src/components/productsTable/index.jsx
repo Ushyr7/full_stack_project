@@ -9,11 +9,14 @@ const base_url = process.env.REACT_APP_API_URL + "/product";
 const ProductsTable =({ products, filter }) => {
     const [setProducts] = useState([products]);
 
-
     let navigate = useNavigate(); 
     const routeChangeUpdate = (id) =>{ 
         let path = "/products/" + id + "/update"; 
         navigate(path);
+    }
+
+    const seeProduct = (id) => {
+        navigate("/products/"+id);
     }
 
     const setProductsData = () => {
@@ -44,7 +47,7 @@ const ProductsTable =({ products, filter }) => {
                 <div className={styles.product} key={product.id}>
                     <div className= {styles.name_container}>
                         <img src="./images/product_logo.png" alt="product" className={styles.product_img}/>
-                        <p className= {styles.product_name}> {product.name} </p>
+                        <p onClick={() => seeProduct(product.id)} className= {styles.product_name}> {product.name} </p>
                     </div>
                     <div className= {styles.creationDate_container}>
                         <p> {product.categories} </p>

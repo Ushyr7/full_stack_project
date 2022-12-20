@@ -18,6 +18,10 @@ const ShopsTable =({ shops }) => {
         navigate(path);
     }
 
+    const seeShop = (id) => {
+        navigate("/shops/" + id);
+    }
+    
     const setShopsData = () => {
         axios.get(base_url).then((response) => {
             setShops(response.data.rows);
@@ -45,7 +49,7 @@ const ShopsTable =({ shops }) => {
                 <div className={styles.shop} key={shop.id}>
                     <div className= {styles.name_container}>
                         <img src="./images/shop_logo.png" alt="shop" className={styles.shop_img}/>
-                        <p className= {styles.shop_name}> {shop.name} </p>
+                        <p onClick={() => seeShop(shop.id)} className= {styles.shop_name}> {shop.name} </p>
                     </div>
                     <div className={styles.creationDate_container}>
                         <p className={styles.creationDate}>{moment(shop.created).format("DD/MM/YYYY")}</p>
