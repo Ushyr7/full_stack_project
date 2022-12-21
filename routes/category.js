@@ -9,7 +9,7 @@ const router = express.Router();
 const query_insertCategory= "insert into Categories(name) values (?);"
 const query_updateCategory= "update Categories set name = ? where id = ?;"
 const query_deleteCategory= "delete from Categories where id = ?"
-const query_getCategories= "select name from Categories;"
+const query_getCategories= "select id, name from Categories;"
 const query_getCategoryWithId = "select name from Categories where id = ?;"
 const query_getCategoriesFromShop = "select distinct categories.name from junctionsproductcategory , products, categories where products.id = productId and categoryId = categories.id and products.shopId = ?;"
 

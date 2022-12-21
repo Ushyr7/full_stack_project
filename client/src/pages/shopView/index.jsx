@@ -97,7 +97,7 @@ function ShopView() {
             <Filter filter={activeFilter} setFilter = {(activeFilter) => setActiveFilter(activeFilter)} categories ={filters}/>
           </div>
         </div>
-        <button className="button"  onClick={routeChangeAdd}>Ajouter</button>
+        <button className="button"  onClick={routeChangeAdd}>Ajouter un produit</button>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ const query_getProductById = "select id, name, price, description, (select GROUP
 const query_getCategoryById = "select * from categories where id = ?;"
 const query_getJunctionProductCategory = "select * from junctionsproductcategory where productid = ? and categoryid = ?"
 const query_insertJunctionProductCategory = "insert into Junctionsproductcategory(productid, categoryid) value (?, ?);"
-const query_getAvailableProducts = "select name from products where shopId is null;"
+const query_getAvailableProducts = "select id, name from products where shopId is null;"
 
 //obtenir les produits qui ne sont pas lié à un magasin
 router.get("/product/available", (req, res) => {
@@ -157,8 +157,8 @@ router.get("/product/shop/:id", (req, res) => {
         if (filter == "%%") {
             query_getProducts= `SELECT id, name, price, description, (select GROUP_CONCAT( name ) as categories from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)
         as categories from products where shopId = ? and name like ? 
-        and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) is null 
-        or ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) like ?
+        and (((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) is null 
+        or ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) like ?)
         order by ${sort} ${sortType} limit ?, 3;`;
             query_getNbProducts = `select count(id) as nbProducts from products where shopId = ? and name like ?
             or (((select GROUP_CONCAT( categories.name ) from junctionsproductcategory, categories,products 
@@ -252,7 +252,7 @@ router.post("/product/:productId/category/:categoryId",(req, res) => {
                                     if(err){
                                         res.status(500).send("Impossible de réaliser cette opération");
                                     } else {
-                                        res.status(201).send("Le catégorie " + req.params.categoryId + " a été ajouté au produit");
+                                        res.status(201).send("Le catégorie a été ajouté au produit");
                                     }
                                 });
                             }

@@ -18,6 +18,10 @@ function ProductView() {
 
   const base_url = process.env.REACT_APP_API_URL + "/product/";
 
+  const routeChangeAdd = () =>{ 
+    navigate('add');
+  }
+
   useEffect(() => {
       axios.get(base_url + param.id).then((response) => {
         const data = response.data;
@@ -52,8 +56,8 @@ function ProductView() {
                 <button className={style.button} onClick={() => navigateUpdate(id)}>Modifier</button>
                 <button  className={style.button} onClick= {() => navigateBack()}>Retour à la liste de produits</button>
             </div>
-            
         </div>
+        <button className="button"  onClick={routeChangeAdd}>Ajouter une catégorie</button>
       </div>
     </div>
   );
