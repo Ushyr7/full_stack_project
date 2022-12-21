@@ -11,6 +11,8 @@ import CreateShops from "./pages/createShops"
 import CreateProducts from "./pages/createProducts"
 import UpdateProduct from "./pages/updateProduct"
 import UpdateShops from "./pages/updateShop";
+import ProductView from "./pages/productView";
+import ShopView from "./pages/shopView";
 
 export default function App() {
   return (
@@ -24,8 +26,10 @@ export default function App() {
         <Route path="/categories/:id/update" element={<UpdateCategory/>}/>
         <Route path="/products/add" element={<CreateProducts/>}/>
         <Route path="/products/:id/update" element={<UpdateProduct/>}/>
+        <Route path="/products/:id" element={<ProductView/>}/>
         <Route path="/shops/add" element={<CreateShops/>}/>
         <Route path="/shops/:id/update" element={<UpdateShops/>}/>
+        <Route path="/shops/:id" element={<ShopView/>}/>
         <Route path="/*" element={<NoPage />}/>
       </Routes>
     </BrowserRouter>

@@ -9,7 +9,7 @@ const router = express.Router();
 const query_insertProduct= "insert into Products(name, description, price) values (?,?,?);"
 const query_updateProduct= "update Products set name = ?, price = ?, description = ? where id = ?;"
 const query_deleteProduct= "delete from Products where id = ?"
-const query_getProductById = "select id, name, price, description from Products where id = ?;"
+const query_getProductById = "select id, name, price, description, (select GROUP_CONCAT( name ) as categories from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)as categories from Products where id = ?;"
 const query_getCategoryById = "select * from categories where id = ?;"
 const query_getJunctionProductCategory = "select * from junctionsproductcategory where productid = ? and categoryid = ?"
 const query_insertJunctionProductCategory = "insert into Junctionsproductcategory(productid, categoryid) value (?, ?);"
@@ -124,6 +124,62 @@ router.get("/product", (req, res) => {
                 } else {
                     let resPage = page + 1;
                     mysqlConnection.query(query_getNbProducts, [search, filter], (err, result)=> {
+                        if(!err) {
+                            res.status(200).send({"lastPage": Math.ceil(result[0].nbProducts / limit), sort,"page": resPage, rows});
+                        } else {
+                            res.status(500).send(err); 
+                        }
+                    })
+                    
+                }
+            } else {
+                res.status(500).send(err);
+            }
+        })
+    } catch (err){
+        res.status(500).send('Erreur');
+    }
+});
+
+//obtenir tout les produits d'un magasin avec pagination, recherche, filtre et tri
+router.get("/product/shop/:id", (req, res) => {
+    try {
+        const page = parseInt(req.query.page) - 1 || 0;
+        const limit = 3;
+        let search = req.query.search ||'';
+        search = "%" + search + "%";
+        let sort = req.query.sort || "id";
+        let sortType=req.query.sortType || "asc";
+        let filter = req.query.filter || '';
+        filter = "%" + filter + "%";
+        let query_getProducts = "";
+        let query_getNbProducts = "";
+        if (filter == "%%") {
+            query_getProducts= `SELECT id, name, price, description, (select GROUP_CONCAT( name ) as categories from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)
+        as categories from products where shopId = ? and name like ? 
+        and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) is null 
+        or ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) like ?
+        order by ${sort} ${sortType} limit ?, 3;`;
+            query_getNbProducts = `select count(id) as nbProducts from products where shopId = ? and name like ?
+            or (((select GROUP_CONCAT( categories.name ) from junctionsproductcategory, categories,products 
+            where products.shopId = ${parseInt(req.params.id)} and categories.id and productId = products.id)) is null 
+            and ((select GROUP_CONCAT( categories.name ) from junctionsproductcategory, categories,products 
+            where products.shopId = ${parseInt(req.params.id)} and categories.id and productId = products.id)) like ? );
+            `
+        } else {
+            query_getProducts= `SELECT id, name, price, description, (select GROUP_CONCAT( name ) as categories  from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)
+        as categories from products where shopId = ? and name like ? and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) like ? order by ${sort} ${sortType} limit ?, 3;`
+            query_getNbProducts = `select count(id) as nbProducts from products where shopId = ? and name like ?
+        and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories 
+        where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) like ?;`
+        }
+        mysqlConnection.query(query_getProducts, [parseInt(req.params.id), search,filter, page * limit], (err, rows, fields)=>{
+            if(!err){
+                if (rows.length == 0) {
+                    res.status(204).send("Aucun produit");
+                } else {
+                    let resPage = page + 1;
+                    mysqlConnection.query(query_getNbProducts, [parseInt(req.params.id), search, filter], (err, result)=> {
                         if(!err) {
                             res.status(200).send({"lastPage": Math.ceil(result[0].nbProducts / limit), sort,"page": resPage, rows});
                         } else {

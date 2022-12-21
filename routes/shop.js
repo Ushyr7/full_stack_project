@@ -5,7 +5,7 @@ const mysqlConnection = require("../connection");
 const router = express.Router();
 
 //préparation des requêtes
-const query_getShopById = "SELECT shops.id, name, isAvailable, created from shops where id = ?;"
+const query_getShopById = "SELECT shops.id, name, isAvailable, created, (select count(*) from Products where shopId= shops.id) as nbProducts from shops where id = ?;"
 const query_getProductById= "select id, name, price, description from Products where id = ?;"
 const query_insertShop= "insert into Shops(name, isAvailable, created) values (?,?, NOW());"
 const query_getNewShopId= "SELECT LAST_INSERT_ID() as id;"
@@ -15,6 +15,7 @@ const query_updateShop= "update Shops set name = ?, isAvailable = ? where id = ?
 const query_getShopInProduct ="select shopId from products where id = ?;"
 const query_insertProductInShop="update Products set shopId = ? where id = ?;"
 const query_getProductsInShop = "select * from products where shopId = ?;"
+const query_getScheduleForShop ="select day, open, close from schedule, shops where shopId = shops.id and shopId = ?;"
 
 //obtenir tout les magasins avec pagination, filtre, recherche et tri
 router.get("/shop", (req, res) => {
@@ -71,7 +72,13 @@ router.get("/shop/:id",(req, res) => {
                             res.status(500).send("Impossible de trouver les articles pour le magasin");
                         }
                         else {
-                            res.status(200).send({"shop" : result, "products" : rows});
+                            mysqlConnection.query(query_getScheduleForShop, [req.params.id], (err, data) => {
+                                if(err) {
+                                    res.status(500).send("Impossible de trouver les horaires pour ce magasin");
+                                } else {
+                                    res.status(200).send({"shop" : result, "schedule" : data, "products" : rows});
+                                }
+                            })
                         }
                         
                     });

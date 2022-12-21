@@ -46,7 +46,7 @@ const ProductsTable =({ products, filter }) => {
             {products.map((product)=> (
                 <div className={styles.product} key={product.id}>
                     <div className= {styles.name_container}>
-                        <img src="./images/product_logo.png" alt="product" className={styles.product_img}/>
+                        <img src="../../images/product_logo.png" alt="product" className={styles.product_img}/>
                         <p onClick={() => seeProduct(product.id)} className= {styles.product_name}> {product.name} </p>
                     </div>
                     <div className= {styles.creationDate_container}>

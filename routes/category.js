@@ -11,8 +11,23 @@ const query_updateCategory= "update Categories set name = ? where id = ?;"
 const query_deleteCategory= "delete from Categories where id = ?"
 const query_getCategories= "select name from Categories;"
 const query_getCategoryWithId = "select name from Categories where id = ?;"
+const query_getCategoriesFromShop = "select distinct categories.name from junctionsproductcategory , products, categories where products.id = productId and categoryId = categories.id and products.shopId = ?;"
 
 
+//obtenir toutes les catégories qui sont attributé à un magasin donné
+router.get("/category/shop/:id", (req, res) => {
+    try {
+        mysqlConnection.query(query_getCategoriesFromShop, [req.params.id], (err, rows) => {
+            if(!err) {
+                res.status(200).send(rows);
+            } else {
+                res.status(500).send("Impossible d'effectuer cette opération"); 
+            }
+        })
+    } catch (err){
+        res.status(500).send('Erreur');
+    }
+});
 
 //obtenir toute les catégories
 router.get("/category/all", (req, res) => {
