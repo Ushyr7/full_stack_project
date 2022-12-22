@@ -1,6 +1,5 @@
 mysql-data/
 node_modules/
-.env
 
 # dependencies
 client/node_modules
