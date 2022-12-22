@@ -1,0 +1,1044 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Documentation de l'API de l'application ShopManager réalisée par Quentin RIDEL en M2 GIL 2022-2023",
+        "version": "1.0.0",
+        "title": "ShopManager API"
+    },
+    "schemes": ["http"],
+    "host": "localhost:8080",
+    "basePath": "",
+    "paths" : {
+        "/category" : {
+            "get" : {
+                "summary" : "Obtenir toute les catégories",
+                "description": "Obtenir toute les catégories avec recherche, pagination et tri",
+                "tags": ["Categories"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in" : "query",
+                    "name" : "page",
+                    "description": "Numéro de page voulu",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "search",
+                    "description": "Une recherche",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "sort",
+                    "description": "L'argument à trier",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "sortType",
+                    "description": "asc ou desc",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "lastPage": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                                "sort": {
+                                    "type": "string"
+                                },
+                                "page": {
+                                    "type": "integer"
+                                },
+                                "rows": {
+                                    "type" : "array",
+                                    "items" : {
+                                        "$ref" : "#/definitions/category"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204" : {
+                        "description" : "Pas de catégories",
+                        "schema" : {}
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }, 
+            "post": {
+                "summary" : "Ajouter une catégorie",
+                "tags": ["Categories"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in" : "body",
+                    "name" : "name",
+                    "description": "nom de la catégorie",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "201": {
+                        "description" : "Opération réussi",
+                        "schema" : {}
+                    },
+                    "500": {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }
+        },
+        "/category/all" : {
+            "get" : {
+                "summary" : "Obtenir toute les catégories",
+                "tags": ["Categories"],
+                "produces": ["application/json"],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {
+                            "type" : "array",
+                            "items" : {
+                                "$ref" : "#/definitions/category"
+                            }                        
+                        }
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }
+        },
+        "/category/shop/{id}" : {
+            "get" : {
+                "summary" : "Obtenir toute les catégories associé à un magasin",
+                "tags": ["Categories"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in" : "path",
+                    "name" : "id",
+                    "description": "Id du magasin",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {
+                            "type" : "array",
+                            "items" : {
+                                "$ref" : "#/definitions/category"
+                            }                        
+                        }
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }
+        },
+        "/category/{id}" : {
+            "get" : {
+                "summary" : "Obtenir une catégorie avec son id",
+                "tags": ["Categories"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in" : "path",
+                    "name" : "id",
+                    "description": "Id de la catégorie",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {
+                            "$ref" : "#/definitions/category"
+                        }
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            },
+            "delete" : {
+                "summary" : "Supprimer une catégorie avec son id",
+                "tags": ["Categories"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in" : "path",
+                    "name" : "id",
+                    "description": "Id de la catégorie",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {
+                            "type" : "string"                       
+                        }
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            },
+            "put" : {
+                "summary" : "modifier une catégorie avec son id",
+                "tags": ["Categories"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in" : "path",
+                    "name" : "id",
+                    "description": "Id de la catégorie",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                },{
+                    "in" : "body",
+                    "name" : "name",
+                    "description": "nom de la catégorie",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }   
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {
+                            "type" : "string"                       
+                        }
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }
+        },
+        "/product/available" :{
+            "get" : {
+                "summary" : "Obtenir tout les produits qui ne sont pas assigné à un magasin",
+                    "tags": ["Produits"],
+                    "produces": ["application/json"],
+                    "responses": {
+                        "200": {
+                            "description": "Opération réussi",
+                            "schema" : {   
+                                "type" : "array",
+                                "items": {
+                                    "$ref" : "#/definitions/simpleProduct"
+                                }
+                            }
+                        },
+                        "500" : {
+                            "description" : "Erreur",
+                            "schema" : {}
+                        },
+                        "204" : {
+                            "description" : "Aucun produits",
+                            "schema" : {}
+                        }
+                    }
+            }
+        },
+        "/product" : {
+            "post" : {
+                "summary" : "Créer un produit",
+                "tags": ["Produits"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in" : "body",
+                    "name" : "name",
+                    "description": "nom du produit",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },{
+                    "in" : "body",
+                    "name" : "description",
+                    "description": "description du produit",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }   
+                }, {
+                "in" : "body",
+                "name" : "price",
+                "description": "prix du produit",
+                "required": true,
+                "schema": {
+                    "type": "number",
+                    "format" : "float"
+                }}],
+                "responses": {
+                    "201": {
+                        "description": "Opération réussi",
+                        "schema" : {   
+                            "type" : "string"
+                        }
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }, 
+            "get" : {
+                "summary" : "Obtenir tout les produits",
+                "description": "Obtenir toute les produits avec recherche, pagination, tri et filtre par catégorie",
+                "tags": ["Produits"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in" : "query",
+                    "name" : "page",
+                    "description": "Numéro de page voulu",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "search",
+                    "description": "Une recherche",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "sort",
+                    "description": "L'argument à trier",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "sortType",
+                    "description": "asc ou desc",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "filter",
+                    "description": "nom de la catégorie pour filtrer les produits",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "lastPage": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                                "sort": {
+                                    "type": "string"
+                                },
+                                "page": {
+                                    "type": "integer"
+                                },
+                                "rows": {
+                                    "type" : "array",
+                                    "items" : {
+                                        "$ref" : "#/definitions/product"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204" : {
+                        "description" : "Pas de produits",
+                        "schema" : {}
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }
+        }, 
+        "/product/{id}" :{
+            "put" : {
+                "summary" : "modifier un produit",
+                "tags": ["Produits"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in" : "path",
+                    "name" : "id",
+                    "description": "id du produit",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                },{
+                    "in" : "body",
+                    "name" : "name",
+                    "description": "nom du produit",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }   
+                }, {
+                "in" : "body",
+                "name" : "price",
+                "description": "prix du produit",
+                "required": true,
+                "schema": {
+                    "type": "number",
+                    "format" : "float"
+                }
+                }, {
+                    "in" : "body",
+                    "name" : "description",
+                    "description": "description du produit",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }}],
+                "responses": {
+                    "201": {
+                        "description": "Opération réussi",
+                        "schema" : {   
+                            "type" : "string"
+                        }
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }, 
+            "delete" : {
+                "summary" : "supprimer un produit",
+                "tags": ["Produits"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in" : "path",
+                    "name" : "id",
+                    "description": "id du produit",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "201": {
+                        "description": "Opération réussi",
+                        "schema" : {   
+                            "type" : "string"
+                        }
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    },
+                    "404" : {
+                        "description" : "Impossible de trouver le produit",
+                        "schema" : {}
+                    }
+                }
+            }, 
+            "get" : {
+                "summary" : "voir un produit",
+                "tags": ["Produits"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in" : "path",
+                    "name" : "id",
+                    "description": "id du produit",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema" : {   
+                            "type" : "object",
+                            "$ref":"#/definitions/product"
+                        }
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    },
+                    "204" : {
+                        "description" : "Impossible de trouver le produit"
+                    }
+                }
+            }
+        }, 
+        "/product/shop/{id}" : {
+            "get" : {
+                "summary" : "Obtenir tout les produits associé à un magasin donné",
+                "description": "Obtenir toute les produits associé avec un magasin avec recherche, pagination, tri et filtre par catégorie",
+                "tags": ["Produits"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "path",
+                    "name": "id",
+                    "description": "id du magasin",
+                    "required" : true,
+                    "schema" : {
+                        "type" : "integer"
+                    }
+                },
+                {
+                    "in" : "query",
+                    "name" : "page",
+                    "description": "Numéro de page voulu",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "search",
+                    "description": "Une recherche",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "sort",
+                    "description": "L'argument à trier",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "sortType",
+                    "description": "asc ou desc",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "filter",
+                    "description": "nom de la catégorie pour filtrer les produits",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "lastPage": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                                "sort": {
+                                    "type": "string"
+                                },
+                                "page": {
+                                    "type": "integer"
+                                },
+                                "rows": {
+                                    "type" : "array",
+                                    "items" : {
+                                        "$ref" : "#/definitions/product"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204" : {
+                        "description" : "Pas de produits",
+                        "schema" : {}
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }
+        },
+        "/product/{productId}/category/{categoryId}" : {
+            "post" : {
+                "summary" : "Ajouter une catégorie à un produit avec leurs id",
+                "tags": ["Produits"],
+                "produces": ["application/json"],
+                "parameters": [{
+                    "in": "path",
+                    "name": "productId",
+                    "description": "id du produit",
+                    "required" : true,
+                    "schema" : {
+                        "type" : "integer"
+                    }
+                },
+                {
+                    "in" : "path",
+                    "name" : "categoryId",
+                    "description": "id de la catégorie",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }],
+                "responses": {
+                    "201": {
+                        "description": "Opération réussi",
+                        "schema" : {}
+                    },
+                    "404" : {
+                        "description" : "Impossible de trouver le produit ou la catégorie",
+                        "schema" : {}
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }
+        },
+        "/shop" : {
+            "get" : {
+                "summary" : "Obtenir tout magasins",
+                "description": "Obtenir toute les magasins avec recherche, pagination, tri",
+                "tags": ["Magasins"],
+                "produces": ["application/json"],
+                "parameters": [
+                {
+                    "in" : "query",
+                    "name" : "page",
+                    "description": "Numéro de page voulu",
+                    "required": false,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "search",
+                    "description": "Une recherche",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "sort",
+                    "description": "L'argument à trier",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in" : "query",
+                    "name" : "sortType",
+                    "description": "asc ou desc",
+                    "required": false,
+                    "schema": {
+                        "type": "string"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "lastPage": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                                "sort": {
+                                    "type": "string"
+                                },
+                                "page": {
+                                    "type": "integer"
+                                },
+                                "rows": {
+                                    "type" : "array",
+                                    "items" : {
+                                        "$ref" : "#/definitions/shop"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204" : {
+                        "description" : "Pas de magasin",
+                        "schema" : {}
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            },
+            "post": {
+                "summary" : "Créer un magasins",
+                "tags": ["Magasins"],
+                "produces": ["application/json"],
+                "parameters": [
+                 {
+                    "in" : "body",
+                    "name" : "name",
+                    "description": "nom du magasin",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }, {
+                    "in" : "body",
+                    "name" : "isAvailable",
+                    "description": "bool pour indiquer si le magasin est disponible ou en congé",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }, {
+                    "in" : "body",
+                    "name" : "schedule",
+                    "description" : "emploi du temps du magasin",
+                    "required": true,
+                    "schema": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/schedule"
+                        }
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "lastPage": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                },
+                                "sort": {
+                                    "type": "string"
+                                },
+                                "page": {
+                                    "type": "integer"
+                                },
+                                "rows": {
+                                    "type" : "array",
+                                    "items" : {
+                                        "$ref" : "#/definitions/shop"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "204" : {
+                        "description" : "Pas de magasin",
+                        "schema" : {}
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }
+        }, 
+        "/shop/{id}" : {
+            "get" : {
+                "summary" : "Voir un magasin",
+                "tags": ["Magasins"],
+                "produces": ["application/json"],
+                "parameters": [
+                {
+                    "in" : "path",
+                    "name" : "id",
+                    "description": "id du magasin",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {
+                            "type": "object",
+                            "$ref" : "#/definitions/completeShop"
+                        }
+                    },
+                    "404" : {
+                        "description" : "Impossible de trouver le magasin",
+                        "schema" : {}
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            },
+            "put" : {
+                "summary" : "modifier un magasin",
+                "tags": ["Magasins"],
+                "produces": ["application/json"],
+                "parameters": [
+                {
+                    "in" : "path",
+                    "name" : "id",
+                    "description": "id du magasin",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }, {
+                "in" : "body",
+                "name" : "name",
+                "description": "nom du magasin",
+                "required": true,
+                "schema": {
+                    "type": "string"
+                }}, 
+                {
+                    "in" : "body",
+                    "name" : "isAvailable",
+                    "description": "disponibilité du magasin, 0 ou 1",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }}],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {}
+                    },
+                    "404" : {
+                        "description" : "Impossible de trouver le magasin",
+                        "schema" : {}
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            },
+            "delete" : {
+                "summary" : "supprimer un magasin",
+                "tags": ["Magasins"],
+                "produces": ["application/json"],
+                "parameters": [
+                {
+                    "in" : "path",
+                    "name" : "id",
+                    "description": "id du magasin",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": "Opération réussi",
+                        "schema": {}
+                    },
+                    "404" : {
+                        "description" : "Impossible de trouver le magasin",
+                        "schema" : {}
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }
+        }, 
+        "/shop/{shopId}/product/{productId}" : {
+            "post": {
+                "summary" : "associer un produit à un magasin",
+                "tags": ["Magasins"],
+                "produces": ["application/json"],
+                "parameters": [
+                 {
+                    "in" : "path",
+                    "name" : "shopId",
+                    "description": "id du magasin",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }, {
+                    "in" : "path",
+                    "name" : "productId",
+                    "description": "id du produit",
+                    "required": true,
+                    "schema": {
+                        "type": "integer"
+                    }
+                }],
+                "responses": {
+                    "201": {
+                        "description": "Opération réussi",
+                        "schema": {
+                        }
+                    },
+                    "404" : {
+                        "description" : "Magasin ou produit pas trouvé",
+                        "schema" : {}
+                    },
+                    "500" : {
+                        "description" : "Erreur",
+                        "schema" : {}
+                    }
+                }
+            }
+        }
+    },
+    "definitions" : {
+            "category" : {
+                "type" : "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name" : {
+                        "type" : "string"
+                    }
+                }
+            },
+            "simpleProduct" : {
+                "type" : "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name" : {
+                        "type" : "string"
+                    }
+                }
+            }, 
+            "product" : {
+                "type" : "object",
+                "properties": {
+                    "id" : {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name" : {
+                        "type" : "string"
+                    }, 
+                    "price" : {
+                        "type" : "number",
+                        "format" : "float"
+                    },
+                    "description" : {
+                        "type" : "string"
+                    },
+                    "categories" : {
+                        "type" : "string"
+                    }
+                }
+            },
+            "shop" : {
+                "type" : "object",
+                "properties" : {
+                    "id" : {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "name" : {
+                        "type" : "string"
+                    },
+                    "isAvailable": {
+                        "type" : "boolean"
+                    },
+                    "created": {
+                        "type" : "string"
+                    },
+                    "nbProducts":{
+                        "type" : "integer"
+                    }
+                }
+            },
+            "completeShop" : {
+                "type" : "object",
+                "properties" : {
+                    "shop" : {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/shop"
+                        }
+                    },
+                    "schedule": {
+                        "type": "array",
+                        "items": {
+                            "$ref" : "#/definitions/schedule"
+                        }
+                    },
+                    "products": {
+                        "type" : "array",
+                        "items": {
+                            "$ref":"#/definitions/product"
+                        }
+                    }
+                }
+            },
+            "schedule": {
+                "type" : "object",
+                "properties" : {  
+                    "day": {
+                        "type" : "integer"
+                    },
+                    "open": {
+                        "type":"string"
+                    },
+                    "close": {
+                        "type":"string"
+                    }
+                }
+            }
+        }
+}

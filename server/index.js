@@ -4,6 +4,10 @@ const mysqlConnection = require("./connection");
 const cors = require('cors');
 const app = express();
 require('dotenv').config();
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //importation des routes
 const productRoutes = require('./routes/product');
@@ -20,4 +24,4 @@ app.use('', productRoutes);
 app.use('', categoryRoutes);
 
 
-app.listen(8080, () => console.log('Server started on port ' + process.env.PORT + ' ...'));
+app.listen(process.env.PORT, () => console.log('Server started on port ' + process.env.PORT + ' ...'));
