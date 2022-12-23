@@ -5,16 +5,16 @@ const mysqlConnection = require("../connection");
 const router = express.Router();
 
 //préparation des requêtes
-const query_getShopById = "SELECT shops.id, name, isAvailable, created, (select count(*) from Products where shopId= shops.id) as nbProducts from shops where id = ?;"
-const query_getProductById= "select id, name, price, description from Products where id = ?;"
-const query_insertShop= "insert into Shops(name, isAvailable, created) values (?,?, NOW());"
+const query_getShopById = "SELECT shops.id, name, isAvailable, created, (select count(*) from products where shopId= shops.id) as nbProducts from shops where id = ?;"
+const query_getProductById= "select id, name, price, description from products where id = ?;"
+const query_insertShop= "insert into shops(name, isAvailable, created) values (?,?, NOW());"
 const query_getNewShopId= "SELECT LAST_INSERT_ID() as id;"
 const query_insertSchedule= "insert into Schedule(shopId, day, open, close) values (?, ?, ?, ?);"
-const query_deleteShop= "delete from Shops where id = ?;"
-const query_updateShop= "update Shops set name = ?, isAvailable = ? where id = ?;"
+const query_deleteShop= "delete from shops where id = ?;"
+const query_updateShop= "update shops set name = ?, isAvailable = ? where id = ?;"
 const query_getShopInProduct ="select shopId from products where id = ?;"
-const query_insertProductInShop="update Products set shopId = ? where id = ?;"
-const query_getProductsInShop = "select * from products where shopId = ?;"
+const query_insertProductInShop="update products set shopId = ? where id = ?;"
+const query_getproductsInShop = "select * from products where shopId = ?;"
 const query_getScheduleForShop ="select day, open, close from schedule, shops where shopId = shops.id and shopId = ?;"
 
 //obtenir tout les magasins avec pagination, filtre, recherche et tri
@@ -26,17 +26,17 @@ router.get("/shop", (req, res) => {
         search = "%" + search + "%";
         let sort = req.query.sort || "id";
         let sortType=req.query.sortType || "asc";
-        const query_getShop = `SELECT shops.id, name, isAvailable, created, (select count(*) from Products where shopId= shops.id) as nbProducts from shops where name like ? order by ${sort} ${sortType} limit ?, 5;`
-        const query_getNbShops="select count(id) as nbShops from shops where name like ?;"
+        const query_getShop = `SELECT shops.id, name, isAvailable, created, (select count(*) from products where shopId= shops.id) as nbProducts from shops where name like ? order by ${sort} ${sortType} limit ?, 5;`
+        const query_getNbshops="select count(id) as nbshops from shops where name like ?;"
         mysqlConnection.query(query_getShop, [search, page * limit], (err, rows, fields)=>{
             if(!err){
                 if (rows.length == 0) {
                     res.status(204).send("Aucun magasin");
                 } else {
                     let resPage = page + 1;
-                    mysqlConnection.query(query_getNbShops, [search], (err, result)=> {
+                    mysqlConnection.query(query_getNbshops, [search], (err, result)=> {
                         if(!err) {
-                                res.status(200).send({"lastPage": Math.ceil(result[0].nbShops / limit), sort,"page": resPage, rows});
+                                res.status(200).send({"lastPage": Math.ceil(result[0].nbshops / limit), sort,"page": resPage, rows});
                         } else {                                
                             res.status(500).send("Impossible d'effectuer cette opération"); 
                         }
@@ -65,7 +65,7 @@ router.get("/shop/:id",(req, res) => {
             else if(!result.length) {
                 res.status(404).send("Impossible de trouver le magasin " + req.params.id)
             } else {
-                mysqlConnection.query(query_getProductsInShop, 
+                mysqlConnection.query(query_getproductsInShop, 
                     [req.params.id],
                     (err, rows)=>{
                         if(err){

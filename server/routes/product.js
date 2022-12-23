@@ -6,13 +6,13 @@ const mysqlConnection = require("../connection");
 const router = express.Router();
 
 //préparation des requêtes
-const query_insertProduct= "insert into Products(name, description, price) values (?,?,?);"
-const query_updateProduct= "update Products set name = ?, price = ?, description = ? where id = ?;"
-const query_deleteProduct= "delete from Products where id = ?"
-const query_getProductById = "select id, name, price, description, (select GROUP_CONCAT( name ) as categories from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)as categories from Products where id = ?;"
+const query_insertProduct= "insert into products(name, description, price) values (?,?,?);"
+const query_updateProduct= "update products set name = ?, price = ?, description = ? where id = ?;"
+const query_deleteProduct= "delete from products where id = ?"
+const query_getProductById = "select id, name, price, description, (select GROUP_CONCAT( name ) as categories from junctionsProductCategory, categories where categoryId = categories.id and productId = products.id)as categories from products where id = ?;"
 const query_getCategoryById = "select * from categories where id = ?;"
-const query_getJunctionProductCategory = "select * from junctionsproductcategory where productid = ? and categoryid = ?"
-const query_insertJunctionProductCategory = "insert into Junctionsproductcategory(productid, categoryid) value (?, ?);"
+const query_getJunctionProductCategory = "select * from junctionsProductCategory where productId = ? and categoryId = ?"
+const query_insertJunctionProductCategory = "insert into junctionsProductCategory(productId, categoryId) value (?, ?);"
 const query_getAvailableProducts = "select id, name from products where shopId is null;"
 
 //obtenir les produits qui ne sont pas lié à un magasin
@@ -100,21 +100,21 @@ router.get("/product", (req, res) => {
         let query_getProducts = "";
         let query_getNbProducts = "";
         if (filter == "%%") {
-            query_getProducts= `SELECT id, name, price, description, (select GROUP_CONCAT( name ) as categories from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)
+            query_getProducts= `SELECT id, name, price, description, (select GROUP_CONCAT( name ) as categories from junctionsProductCategory, categories where categoryId = categories.id and productId = products.id)
         as categories from products where name like ? 
-        and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)) is null 
-        or ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)) like ?
+        and ((select GROUP_CONCAT( name ) from junctionsProductCategory, categories where categoryId = categories.id and productId = products.id)) is null 
+        or ((select GROUP_CONCAT( name ) from junctionsProductCategory, categories where categoryId = categories.id and productId = products.id)) like ?
         order by ${sort} ${sortType} limit ?, 5;`;
             query_getNbProducts = `select count(id) as nbProducts from products where name like ?
-            and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories 
+            and ((select GROUP_CONCAT( name ) from junctionsProductCategory, categories 
             where categoryId = categories.id and productId = products.id)) like ?
-            or ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories 
+            or ((select GROUP_CONCAT( name ) from junctionsProductCategory, categories 
             where categoryId = categories.id and productId = products.id)) is null;`
         } else {
-            query_getProducts= `SELECT id, name, price, description, (select GROUP_CONCAT( name ) as categories  from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)
-        as categories from products where name like ? and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)) like ? order by ${sort} ${sortType} limit ?, 5;`
+            query_getProducts= `SELECT id, name, price, description, (select GROUP_CONCAT( name ) as categories  from junctionsProductCategory, categories where categoryId = categories.id and productId = products.id)
+        as categories from products where name like ? and ((select GROUP_CONCAT( name ) from junctionsProductCategory, categories where categoryId = categories.id and productId = products.id)) like ? order by ${sort} ${sortType} limit ?, 5;`
             query_getNbProducts = `select count(id) as nbProducts from products where name like ?
-        and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories 
+        and ((select GROUP_CONCAT( name ) from junctionsProductCategory, categories 
         where categoryId = categories.id and productId = products.id)) like ?;`
         }
         mysqlConnection.query(query_getProducts, [search,filter, page * limit], (err, rows, fields)=>{
@@ -155,22 +155,22 @@ router.get("/product/shop/:id", (req, res) => {
         let query_getProducts = "";
         let query_getNbProducts = "";
         if (filter == "%%") {
-            query_getProducts= `SELECT id, name, price, description, (select GROUP_CONCAT( name ) as categories from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)
+            query_getProducts= `SELECT id, name, price, description, (select GROUP_CONCAT( name ) as categories from junctionsProductCategory, categories where categoryId = categories.id and productId = products.id)
         as categories from products where shopId = ? and name like ? 
-        and (((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) is null 
-        or ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) like ?)
+        and (((select GROUP_CONCAT( name ) from junctionsProductCategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) is null 
+        or ((select GROUP_CONCAT( name ) from junctionsProductCategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) like ?)
         order by ${sort} ${sortType} limit ?, 3;`;
             query_getNbProducts = `select count(id) as nbProducts from products where shopId = ? and name like ?
-            or (((select GROUP_CONCAT( categories.name ) from junctionsproductcategory, categories,products 
+            or (((select GROUP_CONCAT( categories.name ) from junctionsProductCategory, categories,products 
             where products.shopId = ${parseInt(req.params.id)} and categories.id and productId = products.id)) is null 
-            and ((select GROUP_CONCAT( categories.name ) from junctionsproductcategory, categories,products 
+            and ((select GROUP_CONCAT( categories.name ) from junctionsProductCategory, categories,products 
             where products.shopId = ${parseInt(req.params.id)} and categories.id and productId = products.id)) like ? );
             `
         } else {
-            query_getProducts= `SELECT id, name, price, description, (select GROUP_CONCAT( name ) as categories  from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id)
-        as categories from products where shopId = ? and name like ? and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) like ? order by ${sort} ${sortType} limit ?, 3;`
+            query_getProducts= `SELECT id, name, price, description, (select GROUP_CONCAT( name ) as categories  from junctionsProductCategory, categories where categoryId = categories.id and productId = products.id)
+        as categories from products where shopId = ? and name like ? and ((select GROUP_CONCAT( name ) from junctionsProductCategory, categories where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) like ? order by ${sort} ${sortType} limit ?, 3;`
             query_getNbProducts = `select count(id) as nbProducts from products where shopId = ? and name like ?
-        and ((select GROUP_CONCAT( name ) from junctionsproductcategory, categories 
+        and ((select GROUP_CONCAT( name ) from junctionsProductCategory, categories 
         where categoryId = categories.id and productId = products.id and products.shopId = ${parseInt(req.params.id)})) like ?;`
         }
         mysqlConnection.query(query_getProducts, [parseInt(req.params.id), search,filter, page * limit], (err, rows, fields)=>{

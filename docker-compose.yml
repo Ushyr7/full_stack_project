@@ -1,14 +1,20 @@
 version: "3"
 services:
   db:
-    image: mysql
+    image: mysql:5.7
     container_name: mysqldb
-    command: --default-authentication-plugin=mysql_native_password
     environment:
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=mysecretpassword
       - MYSQL_ROOT_PASSWORD=mysecretpassword
       - MYSQL_DATABASE=fullstack
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
     volumes:
-      - ./mysql-db/data
+      - my-db:/var/lib/mysql
+      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
     networks:
       - shared-network
   
@@ -17,6 +23,8 @@ services:
     build:
       context: server
       dockerfile: Dockerfile
+    env_file:
+      - ./server/.env
     ports:
       - 8080:8080
     networks:
@@ -30,11 +38,14 @@ services:
       context: client
       dockerfile: Dockerfile
     ports:
-      - 4200:4200
+      - 4200:3000
     networks:
       - shared-network
     depends_on:
-      - api
+      - api 
 
 networks:
   shared-network:
+
+volumes: 
+  my-db:

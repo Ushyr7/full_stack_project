@@ -1,7 +1,4 @@
-CREATE SCHEMA fullstack;
-USE fullstack;
-
-CREATE TABLE `Shops` (
+CREATE TABLE `shops` (
   `id` int PRIMARY KEY auto_increment,
   `name` varchar(255) unique,
   `isAvailable` bool,
@@ -9,7 +6,7 @@ CREATE TABLE `Shops` (
   `creatorId` int
 );
 
-CREATE TABLE `Schedule`(
+CREATE TABLE `schedule`(
   `id` int PRIMARY KEY auto_increment,
   `shopId` int,
   `day` tinyint unsigned,
@@ -17,20 +14,20 @@ CREATE TABLE `Schedule`(
   `close` time    
 );
 
-CREATE TABLE `JunctionsProductCategory` (
+CREATE TABLE `junctionsProductCategory` (
   `id` int PRIMARY KEY auto_increment,
   `productId` int,
   `categoryId` int
 );
 
-CREATE TABLE `Users` (
+CREATE TABLE `users` (
   `id` int PRIMARY KEY auto_increment,
   `firstName` varchar(255),
   `lastName` varchar(255),
   `password` varchar(255)
 );
 
-CREATE TABLE `Products` (
+CREATE TABLE `products` (
   `id` int PRIMARY KEY auto_increment,
   `name` varchar(255) unique,
   `price` float,
@@ -38,25 +35,25 @@ CREATE TABLE `Products` (
   `shopId` int
 );
 
-CREATE TABLE `Categories` (
+CREATE TABLE `categories` (
   `id` int PRIMARY KEY auto_increment,
   `name` varchar(255) unique
 );
 
-ALTER TABLE `Products` ADD FOREIGN KEY (`shopId`) REFERENCES `Shops` (`id`) ON DELETE CASCADE;
+ALTER TABLE `products` ADD FOREIGN KEY (`shopId`) REFERENCES `shops` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `Schedule` ADD FOREIGN KEY (`shopID`) REFERENCES `Shops` (`id`) ON DELETE CASCADE;
+ALTER TABLE `schedule` ADD FOREIGN KEY (`shopId`) REFERENCES `shops` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `Shops` ADD FOREIGN KEY (`creatorId`) REFERENCES `Users` (`id`);
+ALTER TABLE `shops` ADD FOREIGN KEY (`creatorId`) REFERENCES `users` (`id`);
 
-ALTER TABLE `JunctionsProductCategory` ADD FOREIGN KEY (`categoryId`) REFERENCES `Categories` (`id`) ON DELETE CASCADE;
+ALTER TABLE `junctionsProductCategory` ADD FOREIGN KEY (`categoryId`) REFERENCES `categories` (`id`) ON DELETE CASCADE;
 
-ALTER TABLE `JunctionsProductCategory` ADD FOREIGN KEY (`productId`) REFERENCES `Products` (`id`) ON DELETE CASCADE;
+ALTER TABLE `junctionsProductCategory` ADD FOREIGN KEY (`productId`) REFERENCES `products` (`id`) ON DELETE CASCADE;
 
 
-insert into Shops(name, isAvailable, created, creatorId)
+insert into shops(name, isAvailable, created, creatorId)
 values("Banette",true, NOW(), null);
-insert into Schedule(shopId, day, open, close) values
+insert into schedule(shopId, day, open, close) values
 ((select id from shops where name = "Banette"), 1, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Banette"), 1, '15:00:00', '19:30:00'),
 ((select id from shops where name = "Banette"), 3, '06:30:00', '13:30:00'),
@@ -70,9 +67,9 @@ insert into Schedule(shopId, day, open, close) values
 ((select id from shops where name = "Banette"), 7, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Banette"), 7, '15:00:00', '19:30:00');
 
-insert into Shops(name, isAvailable, created, creatorId)
+insert into shops(name, isAvailable, created, creatorId)
 values("La Halle aux fruits",true, NOW(), null);
-insert into Schedule(shopId, day, open, close) values
+insert into schedule(shopId, day, open, close) values
 ((select id from shops where name = "La Halle aux fruits"), 2, '06:30:00', '13:30:00'),
 ((select id from shops where name = "La Halle aux fruits"), 2, '15:00:00', '19:30:00'),
 ((select id from shops where name = "La Halle aux fruits"), 3, '06:30:00', '13:30:00'),
@@ -87,9 +84,9 @@ insert into Schedule(shopId, day, open, close) values
 ((select id from shops where name = "La Halle aux fruits"), 7, '15:00:00', '19:30:00');
 
 
-insert into Shops(name, isAvailable, created, creatorId)
+insert into shops(name, isAvailable, created, creatorId)
 values("Boucherie Breuque Olivier",true, NOW(), null);
-insert into Schedule(shopId, day, open, close) values
+insert into schedule(shopId, day, open, close) values
 ((select id from shops where name = "Boucherie Breuque Olivier"), 2, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Boucherie Breuque Olivier"), 2, '15:00:00', '19:30:00'),
 ((select id from shops where name = "Boucherie Breuque Olivier"), 3, '06:30:00', '13:30:00'),
@@ -103,9 +100,9 @@ insert into Schedule(shopId, day, open, close) values
 ((select id from shops where name = "Boucherie Breuque Olivier"), 7, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Boucherie Breuque Olivier"), 7, '15:00:00', '19:30:00');
 
-insert into Shops(name, isAvailable, created, creatorId)
+insert into shops(name, isAvailable, created, creatorId)
 values("Charcuterie Béguet C'ROYAL",true, NOW(), null);
-insert into Schedule(shopId, day, open, close) values
+insert into schedule(shopId, day, open, close) values
 ((select id from shops where name = "Charcuterie Béguet C'ROYAL"), 1, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Charcuterie Béguet C'ROYAL"), 1, '15:00:00', '19:30:00'),
 ((select id from shops where name = "Charcuterie Béguet C'ROYAL"), 3, '06:30:00', '13:30:00'),
@@ -119,9 +116,9 @@ insert into Schedule(shopId, day, open, close) values
 ((select id from shops where name = "Charcuterie Béguet C'ROYAL"), 7, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Charcuterie Béguet C'ROYAL"), 7, '15:00:00', '19:30:00');
 
-insert into Shops(name, isAvailable, created, creatorId)
+insert into shops(name, isAvailable, created, creatorId)
 values("Royal Donuts",true, NOW(), null);
-insert into Schedule(shopId, day, open, close) values
+insert into schedule(shopId, day, open, close) values
 ((select id from shops where name = "Royal Donuts"), 2, '09:30:00', '12:30:00'),
 ((select id from shops where name = "Royal Donuts"), 2, '13:30:00', '18:30:00'),
 ((select id from shops where name = "Royal Donuts"), 3, '06:30:00', '13:30:00'),
@@ -135,9 +132,9 @@ insert into Schedule(shopId, day, open, close) values
 ((select id from shops where name = "Royal Donuts"), 7, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Royal Donuts"), 7, '15:00:00', '19:30:00');
 
-insert into Shops(name, isAvailable, created, creatorId)
+insert into shops(name, isAvailable, created, creatorId)
 values("Maison Vatelier",true, NOW(), null);
-insert into Schedule(shopId, day, open, close) values
+insert into schedule(shopId, day, open, close) values
 ((select id from shops where name = "Maison Vatelier"), 1, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Maison Vatelier"), 1, '15:00:00', '19:30:00'),
 ((select id from shops where name = "Maison Vatelier"), 3, '06:30:00', '13:30:00'),
@@ -151,9 +148,9 @@ insert into Schedule(shopId, day, open, close) values
 ((select id from shops where name = "Maison Vatelier"), 7, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Maison Vatelier"), 7, '15:00:00', '19:30:00');
 
-insert into Shops(name, isAvailable, created, creatorId)
+insert into shops(name, isAvailable, created, creatorId)
 values("Saveurs du soleil",true, NOW(), null);
-insert into Schedule(shopId, day, open, close) values
+insert into schedule(shopId, day, open, close) values
 ((select id from shops where name = "Saveurs du soleil"), 1, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Saveurs du soleil"), 1, '15:00:00', '19:30:00'),
 ((select id from shops where name = "Saveurs du soleil"), 3, '06:30:00', '13:30:00'),
@@ -168,9 +165,9 @@ insert into Schedule(shopId, day, open, close) values
 ((select id from shops where name = "Saveurs du soleil"), 7, '15:00:00', '19:30:00');
 
 
-insert into Shops(name, isAvailable, created, creatorId)
+insert into shops(name, isAvailable, created, creatorId)
 values("Maison Bernard", false, NOW(), null);
-insert into Schedule(shopId, day, open, close) values
+insert into schedule(shopId, day, open, close) values
 ((select id from shops where name = "Maison Bernard"), 1, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Maison Bernard"), 1, '15:00:00', '19:30:00'),
 ((select id from shops where name = "Maison Bernard"), 3, '06:30:00', '13:30:00'),
@@ -184,9 +181,9 @@ insert into Schedule(shopId, day, open, close) values
 ((select id from shops where name = "Maison Bernard"), 7, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Maison Bernard"), 7, '15:00:00', '19:30:00');
 
-insert into Shops(name, isAvailable, created, creatorId)
+insert into shops(name, isAvailable, created, creatorId)
 values("Les Caves",true, NOW(), null);
-insert into Schedule(shopId, day, open, close) values
+insert into schedule(shopId, day, open, close) values
 ((select id from shops where name = "Les Caves"), 1, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Les Caves"), 1, '15:00:00', '19:30:00'),
 ((select id from shops where name = "Les Caves"), 3, '06:30:00', '13:30:00'),
@@ -200,9 +197,9 @@ insert into Schedule(shopId, day, open, close) values
 ((select id from shops where name = "Les Caves"), 7, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Les Caves"), 7, '15:00:00', '19:30:00');
 
-insert into Shops(name, isAvailable, created, creatorId)
+insert into shops(name, isAvailable, created, creatorId)
 values("Zakian Primeurs",true, NOW(), null);
-insert into Schedule(shopId, day, open, close) values
+insert into schedule(shopId, day, open, close) values
 ((select id from shops where name = "Zakian Primeurs"), 1, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Zakian Primeurs"), 1, '15:00:00', '19:30:00'),
 ((select id from shops where name = "Zakian Primeurs"), 3, '06:30:00', '13:30:00'),
@@ -216,7 +213,7 @@ insert into Schedule(shopId, day, open, close) values
 ((select id from shops where name = "Zakian Primeurs"), 7, '06:30:00', '13:30:00'),
 ((select id from shops where name = "Zakian Primeurs"), 7, '15:00:00', '19:30:00');
 
-insert into Categories(name) values
+insert into categories(name) values
 ("Nourriture"),
 ("Patisserie"),
 ("Fruits"),
@@ -228,7 +225,7 @@ insert into Categories(name) values
 ("Viande"),
 ("Légume");
 
-insert into Products(name, price, description) values
+insert into products(name, price, description) values
 ("Baguette tradition", 1.20, "Une baguette tradition"),
 ("Tartelette Caramel beurre salé", 4.75, null),
 ("Tartelette Vanille framboise", 4.20, null),

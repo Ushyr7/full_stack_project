@@ -6,12 +6,12 @@ const router = express.Router();
 
 
 //préparation des requêtes
-const query_insertCategory= "insert into Categories(name) values (?);"
-const query_updateCategory= "update Categories set name = ? where id = ?;"
-const query_deleteCategory= "delete from Categories where id = ?"
-const query_getCategories= "select id, name from Categories;"
-const query_getCategoryWithId = "select name from Categories where id = ?;"
-const query_getCategoriesFromShop = "select distinct categories.name from junctionsproductcategory , products, categories where products.id = productId and categoryId = categories.id and products.shopId = ?;"
+const query_insertCategory= "insert into categories(name) values (?);"
+const query_updateCategory= "update categories set name = ? where id = ?;"
+const query_deleteCategory= "delete from categories where id = ?"
+const query_getCategories= "select id, name from categories;"
+const query_getCategoryWithId = "select name from categories where id = ?;"
+const query_getCategoriesFromShop = "select distinct categories.name from junctionsProductCategory , products, categories where products.id = productId and categoryId = categories.id and products.shopId = ?;"
 
 
 //obtenir toutes les catégories qui sont attributé à un magasin donné
@@ -126,7 +126,7 @@ router.get("/category", (req, res) => {
         search = "%" + search + "%";
         let sort = req.query.sort || "id";
         let sortType= req.query.sortType || "asc";
-        const query_getCategories= `select id, name from Categories where name like ? order by ${sort} ${sortType} limit ?, 5;`
+        const query_getCategories= `select id, name from categories where name like ? order by ${sort} ${sortType} limit ?, 5;`
         const query_getNbCategories="select count(id) as nbCategories from categories where name like ?;"
         mysqlConnection.query(query_getCategories, [search, page * limit], (err, rows, fields)=>{
             if(!err){
