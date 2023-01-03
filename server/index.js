@@ -1,5 +1,16 @@
 const express = require('express');
 const bodyParser = require("body-parser");
+const sleep = async (milliseconds) => {
+    await new Promise(resolve => {
+        return setTimeout(resolve, milliseconds)
+    });
+};
+
+const testSleep = async () => {
+    await sleep(10000);
+}
+
+testSleep();
 const mysqlConnection = require("./connection");
 const cors = require('cors');
 const app = express();

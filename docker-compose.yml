@@ -31,6 +31,8 @@ services:
       - shared-network
     depends_on:
       - db
+    environment:
+      WAIT_HOSTS: db:3306
 
   client:
     container_name: react-client
